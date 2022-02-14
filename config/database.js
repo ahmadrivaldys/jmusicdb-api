@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const database = require('knex')({
     client: process.env.DB_CLIENT,
     connection:
@@ -9,4 +11,4 @@ const database = require('knex')({
     }
 })
 
-export default database
+module.exports = database

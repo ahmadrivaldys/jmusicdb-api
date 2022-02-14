@@ -1,6 +1,6 @@
 const router = require('express')()
-const album  = require('./albumRoutes')
-const song   = require('./songRoutes')
+const album  = require('./album')
+const song   = require('./song')
 
 router.get('/api/v1/', (req, res) =>
 {
