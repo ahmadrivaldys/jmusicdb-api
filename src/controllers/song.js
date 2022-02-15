@@ -1,3 +1,4 @@
+const { validationResult } = require('express-validator')
 const { Song } = require('../../config/models')
 
 const index = async (req, res) =>
@@ -18,7 +19,30 @@ const index = async (req, res) =>
     }
 }
 
+const store = async (req, res) =>
+{
+    const errors = validationResult(req)
+
+    if(!errors.isEmpty())
+    {
+        res.status(422).json(errors)
+    }
+    else
+    {
+        res.status(200)
+        res.json({
+            message: 'Success',
+            data: req.body
+        })
+    }
+    // try
+    // {
+    //     await Song.insert()
+    // }
+}
+
 module.exports =
 {
-    index
+    index,
+    store
 }

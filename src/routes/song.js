@@ -1,6 +1,11 @@
-const router = require('express')()
-const song   = require('../controllers/song')
+const router   = require('express').Router()
+const validate = require('../../middleware/input-validation')
+const song     = require('../controllers/song')
 
 router.get('/api/v1/songs', song.index)
+router.post('/api/v1/song', validate.song.store, song.store)
+router.get('/api/v1/song/:id', song.store)
+router.put('/api/v1/song/:id', song.store)
+router.delete('/api/v1/song/:id', song.store)
 
 module.exports = router
