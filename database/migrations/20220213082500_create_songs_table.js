@@ -4,7 +4,7 @@ exports.up = function(knex)
 {
     return knex.schema.createTable(tables.songs, function(table)
     {
-        table.increments('id', 10)
+        table.increments()
         table.string('title', 150).notNullable()
         table.integer('album_id', 5).unsigned().notNullable()
         table.string('artists_id', 15).notNullable()

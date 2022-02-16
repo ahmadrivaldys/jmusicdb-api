@@ -9,7 +9,9 @@ const index = async (req, res) =>
 
         res.status(200)
         res.json({
-            message: 'Success',
+            statusCode: 200,
+            statusMessage: 'OK',
+            message: 'Successfully fetched all song data.',
             data: songs
         })
     }
@@ -29,20 +31,47 @@ const store = async (req, res) =>
     }
     else
     {
+        try
+        {
+            await Song.insert(req.body)
+
+            res.status(201)
+            res.json({
+                statusCode: 201,
+                statusMessage: 'Created',
+                message: 'Successfully created song data.'
+            })
+        }
+        catch(error)
+        {
+            res.status(422).json(error)
+        }
+    }
+}
+
+const show = async (req, res) =>
+{
+    try
+    {
+        const songs = await Song.where('id', req.params.id).select()
+
         res.status(200)
         res.json({
-            message: 'Success',
-            data: req.body
+            statusCode: 200,
+            statusMessage: 'OK',
+            message: 'Successfully fetched song data.',
+            data: songs[0]
         })
     }
-    // try
-    // {
-    //     await Song.insert()
-    // }
+    catch(error)
+    {
+        res.status(422).json(error)
+    }
 }
 
 module.exports =
 {
     index,
-    store
+    store,
+    show
 }
