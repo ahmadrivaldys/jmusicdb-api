@@ -1,11 +1,11 @@
 const { validationResult } = require('express-validator')
-const { Song } = require('../../config/models')
+const { Song } = require('../models')
 
 const index = async (req, res) =>
 {
     try
     {
-        const songs = await Song
+        const songs = await Song.all()
 
         res.status(200)
         res.json({
@@ -33,7 +33,7 @@ const store = async (req, res) =>
     {
         try
         {
-            await Song.insert(req.body)
+            await Song.create(req.body)
 
             res.status(201)
             res.json({
@@ -53,14 +53,14 @@ const show = async (req, res) =>
 {
     try
     {
-        const songs = await Song.where('id', req.params.id).select()
+        const songs = await Song.findById(req.params.id)
 
-        res.status(200)
+        res.status(songs.length > 0 ? 200 : 404)
         res.json({
-            statusCode: 200,
-            statusMessage: 'OK',
-            message: 'Successfully fetched song data.',
-            data: songs[0]
+            statusCode: songs.length > 0 ? 200 : 404,
+            statusMessage: songs.length > 0 ? 'OK' : 'Not Found',
+            message: songs.length > 0 ? 'Successfully fetched song data.' : 'Song data not found.',
+            data: songs.length > 0 ? songs[0] : '-'
         })
     }
     catch(error)

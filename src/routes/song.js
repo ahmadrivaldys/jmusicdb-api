@@ -1,5 +1,5 @@
 const router   = require('express').Router()
-const validate = require('../../middleware/input-validation')
+const validate = require('../middleware/input-validation')
 const song     = require('../controllers/song')
 
 router.get('/api/v1/songs', song.index)
