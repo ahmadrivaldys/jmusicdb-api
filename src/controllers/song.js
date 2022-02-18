@@ -33,13 +33,15 @@ const store = async (req, res) =>
     {
         try
         {
-            await Song.create(req.body)
+            const create = await Song.create(req.body)
+            const createdData = await Song.findById(create)
 
             res.status(201)
             res.json({
                 statusCode: 201,
                 statusMessage: 'Created',
-                message: 'Successfully created song data.'
+                message: 'Successfully created song data.',
+                data: createdData
             })
         }
         catch(error)
@@ -53,14 +55,14 @@ const show = async (req, res) =>
 {
     try
     {
-        const songs = await Song.findById(req.params.id)
+        const songData = await Song.findById(req.params.id)
 
-        res.status(songs.length > 0 ? 200 : 404)
+        res.status(songData ? 200 : 404)
         res.json({
-            statusCode: songs.length > 0 ? 200 : 404,
-            statusMessage: songs.length > 0 ? 'OK' : 'Not Found',
-            message: songs.length > 0 ? 'Successfully fetched song data.' : 'Song data not found.',
-            data: songs.length > 0 ? songs[0] : '-'
+            statusCode: songData ? 200 : 404,
+            statusMessage: songData ? 'OK' : 'Not Found',
+            message: songData ? 'Successfully fetched song data.' : 'Song data not found.',
+            data: songData ? songData : '-'
         })
     }
     catch(error)
@@ -69,9 +71,40 @@ const show = async (req, res) =>
     }
 }
 
+const update = async (req, res) =>
+{
+    const errors = validationResult(req)
+
+    if(!errors.isEmpty())
+    {
+        res.status(422).json(errors)
+    }
+    else
+    {
+        try
+        {
+            const update = await Song.update(req.body).where('id', req.params.id)
+            const updatedData = await Song.findById(req.params.id)
+
+            res.status(update ? 200 : 404)
+            res.json({
+                statusCode: update ? 200 : 404,
+                statusMessage: update ? 'OK' : 'Not Found',
+                message: update ? 'Successfully updated song data.' : 'Update failed: Song data not found.',
+                data: update ? updatedData : '-'
+            })
+        }
+        catch(error)
+        {
+            res.status(422).json(error)
+        }
+    }
+}
+
 module.exports =
 {
     index,
     store,
-    show
+    show,
+    update
 }
