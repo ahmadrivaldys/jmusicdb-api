@@ -2,13 +2,14 @@
 
 const tables =
 {
-    accounts: 'tbl_accounts',
+    account_types: 'tbl_account_types',
+    admin_accounts: 'tbl_admin_accounts',
+    albums: 'tbl_albums',
     artists: 'tbl_artists',
     songs: 'tbl_songs',
-    albums: 'tbl_albums',
-    tags: 'tbl_tags',
     statuses: 'tbl_statuses',
-    account_types: 'tbl_account_types'
+    tags: 'tbl_tags',
+    user_accounts: 'tbl_user_accounts'
 }
 
 module.exports = tables

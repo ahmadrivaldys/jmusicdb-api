@@ -19,14 +19,26 @@ module.exports = (tableName) =>
         return database(tableName).update(props).update('updated_at', database.fn.now())
     }
 
+    const destroy = id =>
+    {
+        return database(tableName).del().where('id', id)
+    }
+
     const select = () => database(tableName)
-    const where = (key, value) => database(tableName).where(key, value)
+    
+    const where = (params, value = null) =>
+    {
+        if(typeof params === 'object' && value === null) return database(tableName).where(params)
+        if(typeof params === 'string' && value !== null) return database(tableName).where(params, value)
+        return console.log('Invalid format.')
+    }
 
     return {
         all,
         create,
         findById,
         update,
+        destroy,
         select,
         where
     }

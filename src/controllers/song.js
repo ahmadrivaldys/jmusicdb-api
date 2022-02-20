@@ -101,10 +101,30 @@ const update = async (req, res) =>
     }
 }
 
+const destroy = async (req, res) =>
+{
+    try
+    {
+        const deleted = await Song.destroy(req.params.id)
+
+        res.status(deleted ? 200 : 404)
+        res.json({
+            statusCode: deleted ? 200 : 404,
+            statusMessage: deleted ? 'OK' : 'Not Found',
+            message: deleted ? 'Successfully deleted song data.' : 'Delete failed: Song data not found.'
+        })
+    }
+    catch(error)
+    {
+        res.status(422).json(error)
+    }
+}
+
 module.exports =
 {
     index,
     store,
     show,
-    update
+    update,
+    destroy
 }
