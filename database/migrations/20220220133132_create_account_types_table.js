@@ -6,6 +6,8 @@ exports.up = function(knex)
     {
         table.increments()
         table.string('name', 20).notNullable()
+        table.string('category', 5).notNullable()
+        table.integer('category_order', 2).notNullable()
         table.integer('order', 2).notNullable()
     })
 }

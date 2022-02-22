@@ -8,11 +8,11 @@ exports.seed = function(knex)
         // Data
         data =
         [
-            { name: 'Administrator', order: 1 },
-            { name: 'Editor', order: 2 },
-            { name: 'Artist', order: 3 },
-            { name: 'Subscriber', order: 4 },
-            { name: 'User', order: 5 }
+            { name: 'Administrator', category: 'Admin', category_order: 1, order: 1 },
+            { name: 'Editor', category: 'Admin', category_order: 2, order: 2 },
+            { name: 'Artist', category: 'User', category_order: 1, order: 3 },
+            { name: 'Subscriber', category: 'User', category_order: 2, order: 4 },
+            { name: 'User', category: 'User', category_order: 3, order: 5 }
         ]
 
         // Insert seed entries
