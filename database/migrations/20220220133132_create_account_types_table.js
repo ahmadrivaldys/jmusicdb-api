@@ -4,7 +4,7 @@ exports.up = function(knex)
 {
     return knex.schema.createTable(tables.account_types, function(table)
     {
-        table.increments('id', 2)
+        table.increments()
         table.string('name', 20).notNullable()
         table.integer('order', 2).notNullable()
     })

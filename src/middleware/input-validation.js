@@ -8,7 +8,7 @@ const validate =
         [
             body('username').isLength({ min: 5, max: 20 }),
             body('username').not().isEmpty().withMessage('Username is required.').isAlphanumeric(),
-            body('fullname').isAlpha().isLength({ min: 5, max: 50 }),
+            body('fullname').isAlpha('en-US', {ignore: '\s'}).isLength({ min: 5, max: 50 }),
             body('email').not().isEmpty().withMessage('E-mail is required.').isEmail(),
             body('password').not().isEmpty().withMessage('Password is required.').isAlphanumeric()
         ],
@@ -19,14 +19,14 @@ const validate =
         [
             body('username').isLength({ min: 5, max: 20 }),
             body('username').not().isEmpty().withMessage('Username is required.').isAlphanumeric(),
-            body('fullname').isAlpha().isLength({ min: 5, max: 50 }),
+            body('fullname').isAlpha('en-US', {ignore: '\s'}).isLength({ min: 5, max: 50 }),
             body('email').not().isEmpty().withMessage('E-mail is required.').isEmail(),
             body('password').not().isEmpty().withMessage('Password is required.').isAlphanumeric()
         ],
         login:
         [
-            body('username').not().isEmpty().withMessage('required value').isAlphanumeric(),
-            body('password').not().isEmpty().withMessage('required value').isAlphanumeric()
+            body('username').not().isEmpty().withMessage('Username is required.').isAlphanumeric(),
+            body('password').not().isEmpty().withMessage('Password is required.').isAlphanumeric()
         ]
     },
     song:

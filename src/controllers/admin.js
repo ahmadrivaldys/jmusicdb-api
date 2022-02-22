@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs')
 const { validationResult } = require('express-validator')
 const { Admin } = require('../models')
 
@@ -18,6 +19,12 @@ const store = async (req, res) =>
     {
         try
         {
+            const salt = bcrypt.genSaltSync(10)
+            const passwordHash = bcrypt.hashSync(req.body.password, salt)
+            
+            req.body.password = passwordHash
+            req.body.account_type_id = 1
+
             const create = await Admin.create(req.body)
             const createdData = await Admin.findById(create)
 
