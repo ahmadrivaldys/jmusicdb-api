@@ -6,6 +6,7 @@ const tables =
     admin_accounts: 'tbl_admin_accounts',
     albums: 'tbl_albums',
     artists: 'tbl_artists',
+    blacklisted_tokens: 'tbl_blacklisted_tokens',
     songs: 'tbl_songs',
     statuses: 'tbl_statuses',
     tags: 'tbl_tags',

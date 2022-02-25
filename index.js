@@ -1,10 +1,19 @@
-const express = require('express')
-const app     = express()
-const routes  = require('./src/routes')
+const express    = require('express')
+const app        = express()
+const bodyParser = require('body-parser')
+const multer     = require('multer')
+const path       = require('path')
+const routes     = require('./src/routes')
 require('dotenv').config()
 
-app.use(express.urlencoded({ extended: true }))
-app.use(express.json())
+const fileStorage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, 'images'),
+    filename: (req, file, cb) => cb(null, `${new Date().getTime()}-${file.originalname}`)
+})
+
+app.use(bodyParser.json())
+app.use('/src/images', express.static(path.join(__dirname, 'src/images')))
+app.use(multer({ storage: fileStorage }).single('image'))
 app.use(routes)
 
 const server = app.listen(process.env.APP_PORT, () =>
