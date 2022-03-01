@@ -12,9 +12,9 @@ const fileStorage = multer.diskStorage({
 })
 
 app.use(bodyParser.json())
-app.use('/src/images', express.static(path.join(__dirname, 'src/images')))
+app.use('/public/images', express.static(path.join(__dirname, 'public/images')))
 app.use(multer({ storage: fileStorage }).single('image'))
-app.use(routes)
+app.use('/v1', routes)
 
 const server = app.listen(process.env.APP_PORT, () =>
 {

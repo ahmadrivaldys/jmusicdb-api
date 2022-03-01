@@ -3,10 +3,10 @@ const auth     = require('../middleware/authenticate')
 const validate = require('../middleware/validate-input')
 const song     = require('../controllers/song')
 
-router.get('/api/v1/songs', song.index)
-router.post('/api/v1/song', [auth, validate.song.store], song.store)
-router.get('/api/v1/song/:id', song.show)
-router.put('/api/v1/song/:id', [auth, validate.song.update], song.update)
-router.delete('/api/v1/song/:id', auth, song.destroy)
+router.get('/songs', song.index)
+router.post('/song', [auth, validate.song.store], song.store)
+router.get('/song/:id', song.show)
+router.put('/song/:id', [auth, validate.song.update], song.update)
+router.delete('/song/:id', auth, song.destroy)
 
 module.exports = router

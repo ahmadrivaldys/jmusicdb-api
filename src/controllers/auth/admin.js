@@ -1,13 +1,8 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { validationResult } = require('express-validator')
-const { Admin, Blacklist } = require('../models')
+const { Admin, Blacklist } = require('../../models')
 require('dotenv').config()
-
-const register = async (req, res) =>
-{
-    // 
-}
 
 const login = async (req, res) =>
 {
@@ -94,7 +89,7 @@ const logout = async (req, res) =>
             return res.status(422).send({
                 statusCode: 422,
                 statusMessage: 'Unprocessable Entity',
-                message: 'You\'ve logged out before. No need log out again.'
+                message: 'You\'ve logged out before. No need to log out again.'
             })
         }
 
@@ -113,9 +108,4 @@ const logout = async (req, res) =>
     }
 }
 
-module.exports =
-{
-    register,
-    login,
-    logout
-}
+module.exports = { login, logout }

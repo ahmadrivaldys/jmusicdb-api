@@ -4,7 +4,7 @@ const album  = require('./album')
 const auth   = require('./auth')
 const song   = require('./song')
 
-router.get('/api/v1/', (req, res) =>
+router.get('/', (req, res) =>
 {
     res.json({
         message: 'Welcome to Japanese Music DB API'
