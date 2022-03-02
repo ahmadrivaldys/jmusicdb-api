@@ -6,7 +6,38 @@ require('dotenv').config()
 
 const register = async (req, res) =>
 {
-    // 
+    const errors = validationResult(req)
+
+    if(!errors.isEmpty())
+    {
+        res.status(422).json(errors)
+    }
+    else
+    {
+        try
+        {
+            const salt = bcrypt.genSaltSync(10)
+            const passwordHash = bcrypt.hashSync(req.body.password, salt)
+            
+            req.body.password = passwordHash
+            req.body.account_type_id = 5
+
+            const create = await User.create(req.body)
+            const createdData = await User.findById(create)
+
+            res.status(201)
+            res.json({
+                statusCode: 201,
+                statusMessage: 'Created',
+                message: 'Successfully created user account.',
+                data: createdData
+            })
+        }
+        catch(error)
+        {
+            res.status(422).json(error)
+        }
+    }
 }
 
 const login = async (req, res) =>

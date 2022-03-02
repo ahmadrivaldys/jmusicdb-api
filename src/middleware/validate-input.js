@@ -6,9 +6,9 @@ const validate =
     {
         store:
         [
-            body('username').isLength({ min: 5, max: 20 }),
+            body('username').isLength({ min: 5, max: 20 }).withMessage('Minimum character length is 5 and maximum is 20.'),
             body('username').not().isEmpty().withMessage('Username is required.').isAlphanumeric(),
-            body('fullname').isAlpha('en-US', {ignore: '\s'}).isLength({ min: 5, max: 50 }),
+            body('fullname').isAlpha('en-US', { ignore: '\s' }).isLength({ min: 5, max: 50 }).withMessage('Minimum character length is 5 and maximum is 50.'),
             body('email').not().isEmpty().withMessage('E-mail is required.').isEmail(),
             body('password').not().isEmpty().withMessage('Password is required.').isAlphanumeric()
         ],
@@ -17,11 +17,20 @@ const validate =
     {
         register:
         [
-            body('username').isLength({ min: 5, max: 20 }),
-            body('username').not().isEmpty().withMessage('Username is required.').isAlphanumeric(),
-            body('fullname').isAlpha('en-US', {ignore: '\s'}).isLength({ min: 5, max: 50 }),
-            body('email').not().isEmpty().withMessage('E-mail is required.').isEmail(),
-            body('password').not().isEmpty().withMessage('Password is required.').isAlphanumeric()
+            body('username').not().isEmpty().withMessage('Username is required.')
+                            .isAlphanumeric().withMessage('Only letters and numbers are allowed.')
+                            .isLength({ min: 5, max: 20 }).withMessage('Minimum character length is 5 and maximum is 20.'),
+            body('fullname').isAlpha('en-US', { ignore: '\s' }).isLength({ min: 5, max: 50 }).withMessage('Minimum character length is 5 and maximum is 50.'),
+            body('email').not().isEmpty().withMessage('E-mail is required.')
+                        .isEmail().withMessage('Invalid e-mail.'),
+            body('password').not().isEmpty().withMessage('Password is required.').isAlphanumeric(),
+            body('password_confirmation').not().isEmpty().withMessage('Password confirmation is required.').isAlphanumeric(),
+            body('password_confirmation').custom((value, { req }) =>
+            {
+                if(value !== req.body.password) throw new Error('Password confirmation does not match password.')
+            
+                return true
+            })
         ],
         login:
         [
