@@ -17,6 +17,7 @@ const index = async (req, res) =>
     }
     catch(error)
     {
+        console.log(error)
         res.status(422).json(error)
     }
 }
@@ -46,6 +47,7 @@ const store = async (req, res) =>
         }
         catch(error)
         {
+            console.log(error)
             res.status(422).json(error)
         }
     }
@@ -67,6 +69,7 @@ const show = async (req, res) =>
     }
     catch(error)
     {
+        console.log(error)
         res.status(422).json(error)
     }
 }
@@ -96,6 +99,7 @@ const update = async (req, res) =>
         }
         catch(error)
         {
+            console.log(error)
             res.status(422).json(error)
         }
     }
@@ -116,6 +120,7 @@ const destroy = async (req, res) =>
     }
     catch(error)
     {
+        console.log(error)
         res.status(422).json(error)
     }
 }

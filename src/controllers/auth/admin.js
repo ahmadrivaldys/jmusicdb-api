@@ -50,6 +50,7 @@ const login = async (req, res) =>
         }
         catch(error)
         {
+            console.log(error)
             res.status(422).json(error)
         }
     }
@@ -104,6 +105,7 @@ const logout = async (req, res) =>
     }
     catch(error)
     {
+        console.log(error)
         res.status(422).json(error)
     }
 }

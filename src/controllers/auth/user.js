@@ -10,12 +10,14 @@ const register = async (req, res) =>
 
     if(!errors.isEmpty())
     {
-        res.status(422).json(errors)
+        res.status(422).json({ errors: errors.mapped() })
     }
     else
     {
         try
         {
+            delete req.body.password_confirmation
+
             const salt = bcrypt.genSaltSync(10)
             const passwordHash = bcrypt.hashSync(req.body.password, salt)
             
@@ -35,6 +37,7 @@ const register = async (req, res) =>
         }
         catch(error)
         {
+            console.log(error)
             res.status(422).json(error)
         }
     }
@@ -86,6 +89,7 @@ const login = async (req, res) =>
         }
         catch(error)
         {
+            console.log(error)
             res.status(422).json(error)
         }
     }
@@ -140,6 +144,7 @@ const logout = async (req, res) =>
     }
     catch(error)
     {
+        console.log(error)
         res.status(422).json(error)
     }
 }
