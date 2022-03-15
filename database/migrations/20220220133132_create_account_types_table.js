@@ -4,7 +4,7 @@ exports.up = function(knex)
 {
     return knex.schema.createTable(tables.account_types, function(table)
     {
-        table.increments()
+        table.uuid('uuid').primary().defaultTo(knex.raw('(UUID())'))
         table.string('name', 20).notNullable()
         table.string('category', 5).notNullable()
         table.integer('category_order', 2).notNullable()

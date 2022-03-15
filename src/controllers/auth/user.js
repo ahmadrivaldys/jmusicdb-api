@@ -25,7 +25,7 @@ const register = async (req, res) =>
             req.body.account_type_id = 5
 
             const create = await User.create(req.body)
-            const createdData = await User.findById(create)
+            const createdData = await User.findByUUID(create)
 
             res.status(201)
             res.json({
@@ -71,7 +71,7 @@ const login = async (req, res) =>
             if(!checkPassword) return response('Incorrect password.')
 
             const token = jwt.sign({
-                id: checkUser.id,
+                uuid: checkUser.uuid,
                 username: checkUser.username
             },
             process.env.JWT_SECRET_KEY,

@@ -14,6 +14,11 @@ module.exports = (tableName) =>
         return database(tableName).where('id', id).first()
     }
 
+    const findByUUID = id =>
+    {
+        return database(tableName).where('uuid', id).first()
+    }
+
     const update = props =>
     {
         return database(tableName).update(props).update('updated_at', database.fn.now())
@@ -37,6 +42,7 @@ module.exports = (tableName) =>
         all,
         create,
         findById,
+        findByUUID,
         update,
         destroy,
         select,

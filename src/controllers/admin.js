@@ -26,7 +26,7 @@ const store = async (req, res) =>
             req.body.account_type_id = 1
 
             const create = await Admin.create(req.body)
-            const createdData = await Admin.findById(create)
+            const createdData = await Admin.findByUUID(create)
 
             res.status(201)
             res.json({

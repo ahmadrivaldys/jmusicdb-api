@@ -32,7 +32,7 @@ const login = async (req, res) =>
             if(!checkPassword) return response('Incorrect password.')
 
             const token = jwt.sign({
-                id: checkUser.id,
+                uuid: checkUser.uuid,
                 username: checkUser.username
             },
             process.env.JWT_SECRET_KEY,

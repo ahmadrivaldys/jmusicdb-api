@@ -4,7 +4,7 @@ exports.up = function(knex)
 {
     return knex.schema.createTable(tables.blacklisted_tokens, function(table)
     {
-        table.increments()
+        table.uuid('uuid').primary().defaultTo(knex.raw('(UUID())'))
         table.string('token').notNullable()
         table.timestamps(true, true)
     })

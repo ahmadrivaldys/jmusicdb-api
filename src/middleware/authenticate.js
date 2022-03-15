@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
-const { Blacklist } = require('../models')
+const { Blacklist, Admin } = require('../models')
 
-const authenticate = async (req, res, next) =>
+const authenticate = async (req, res) =>
 {
     const { authorization } = req.headers
 
@@ -37,19 +37,42 @@ const authenticate = async (req, res, next) =>
         })
     }
 
-    jwt.verify(authToken, process.env.JWT_SECRET_KEY, (err) =>
+    return authToken
+}
+
+const admin = async (req, res, next) =>
+{
+    const verifiedAuthToken = await authenticate(req, res)
+
+    jwt.verify(verifiedAuthToken, process.env.JWT_SECRET_KEY, (err, decoded) =>
     {
         if(err)
         {
-            return res.status(500).send({
-                statusCode: 500,
-                statusMessage: 'Internal Server Error',
+            return res.status(401).send({
+                statusCode: 401,
+                statusMessage: 'Unauthorized',
                 message: err
             })
         }
 
-        next()
+        req.uuid = decoded.uuid
+        req.username = decoded.username
     })
+
+    const checkAccount = await Admin.where({ uuid: req.uuid, username: req.username })
+                                    .whereIn('account_type_id', [1, 2])
+                                    .select('username', 'account_type_id').first()
+
+    if(!checkAccount)
+    {
+        return res.status(401).send({
+            statusCode: 401,
+            statusMessage: 'Unauthorized',
+            message: 'Only admin is allowed.'
+        })
+    }
+
+    next()
 }
 
-module.exports = authenticate
+module.exports = { admin }

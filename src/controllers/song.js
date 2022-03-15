@@ -35,7 +35,7 @@ const store = async (req, res) =>
         try
         {
             const create = await Song.create(req.body)
-            const createdData = await Song.findById(create)
+            const createdData = await Song.findByUUID(create)
 
             res.status(201)
             res.json({
@@ -57,7 +57,7 @@ const show = async (req, res) =>
 {
     try
     {
-        const songData = await Song.findById(req.params.id)
+        const songData = await Song.findByUUID(req.params.uuid)
 
         res.status(songData ? 200 : 404)
         res.json({
@@ -86,8 +86,8 @@ const update = async (req, res) =>
     {
         try
         {
-            const update = await Song.update(req.body).where('id', req.params.id)
-            const updatedData = await Song.findById(req.params.id)
+            const update = await Song.update(req.body).where('uuid', req.params.uuid)
+            const updatedData = await Song.findByUUID(req.params.uuid)
 
             res.status(update ? 200 : 404)
             res.json({
