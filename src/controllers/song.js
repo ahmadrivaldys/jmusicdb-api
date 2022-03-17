@@ -1,4 +1,5 @@
 const { validationResult } = require('express-validator')
+const { nanoid } = require('nanoid')
 const { Song } = require('../models')
 
 const index = async (req, res) =>
@@ -34,8 +35,20 @@ const store = async (req, res) =>
     {
         try
         {
-            const create = await Song.create(req.body)
-            const createdData = await Song.findByUUID(create)
+            const { title, album_id, artists_id, release_date, duration, slug } = req.body
+
+            const create = await Song.create({
+                id: nanoid(),
+                title,
+                album_id,
+                artists_id,
+                release_date,
+                duration,
+                slug,
+                author_id: req.uuid
+            })
+
+            const createdData = await Song.findById(create)
 
             res.status(201)
             res.json({
@@ -57,7 +70,7 @@ const show = async (req, res) =>
 {
     try
     {
-        const songData = await Song.findByUUID(req.params.uuid)
+        const songData = await Song.findById(req.params.id)
 
         res.status(songData ? 200 : 404)
         res.json({
@@ -86,8 +99,18 @@ const update = async (req, res) =>
     {
         try
         {
-            const update = await Song.update(req.body).where('uuid', req.params.uuid)
-            const updatedData = await Song.findByUUID(req.params.uuid)
+            const { title, album_id, artists_id, release_date, duration, slug } = req.body
+
+            const update = await Song.update({
+                title,
+                album_id,
+                artists_id,
+                release_date,
+                duration,
+                slug
+            }).where('id', req.params.id)
+
+            const updatedData = await Song.findByUUID(req.params.id)
 
             res.status(update ? 200 : 404)
             res.json({

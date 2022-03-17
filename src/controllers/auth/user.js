@@ -1,7 +1,8 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { validationResult } = require('express-validator')
-const { Blacklist, User } = require('../../models')
+const { v4: uuidv4 } = require('uuid')
+const { AccountType, Blacklist, User } = require('../../models')
 require('dotenv').config()
 
 const register = async (req, res) =>
@@ -16,15 +17,21 @@ const register = async (req, res) =>
     {
         try
         {
-            delete req.body.password_confirmation
+            const { username, fullname, email, password, account_type_code } = req.body
 
             const salt = bcrypt.genSaltSync(10)
-            const passwordHash = bcrypt.hashSync(req.body.password, salt)
-            
-            req.body.password = passwordHash
-            req.body.account_type_id = 5
+            const passwordHash = bcrypt.hashSync(password, salt)
+            const accountType = await AccountType.where('code', account_type_code).first()
 
-            const create = await User.create(req.body)
+            const create = await User.create({
+                uuid: uuidv4(),
+                username,
+                fullname,
+                email,
+                password: passwordHash,
+                account_type_id: accountType.id
+            })
+
             const createdData = await User.findByUUID(create)
 
             res.status(201)

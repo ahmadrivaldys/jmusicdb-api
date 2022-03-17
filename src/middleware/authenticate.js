@@ -59,8 +59,7 @@ const admin = async (req, res, next) =>
         req.username = decoded.username
     })
 
-    const checkAccount = await Admin.where({ uuid: req.uuid, username: req.username })
-                                    .whereIn('account_type_id', [1, 2])
+    const checkAccount = await Admin.where({ uuid: req.uuid, username: req.username, account_type_id: 1 })
                                     .select('username', 'account_type_id').first()
 
     if(!checkAccount)

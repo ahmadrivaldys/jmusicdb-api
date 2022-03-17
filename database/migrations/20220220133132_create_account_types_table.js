@@ -4,11 +4,11 @@ exports.up = function(knex)
 {
     return knex.schema.createTable(tables.account_types, function(table)
     {
-        table.uuid('uuid').primary().defaultTo(knex.raw('(UUID())'))
+        table.increments()
+        table.specificType('code', 'CHAR(8)').notNullable()
         table.string('name', 20).notNullable()
         table.string('category', 5).notNullable()
         table.integer('category_order', 2).notNullable()
-        table.integer('order', 2).notNullable()
     })
 }
 

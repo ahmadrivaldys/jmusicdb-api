@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs')
 const { validationResult } = require('express-validator')
-const { Admin } = require('../models')
+const { v4: uuidv4 } = require('uuid')
+const { AccountType, Admin } = require('../models')
 
 const index = async (req, res) =>
 {
@@ -13,19 +14,27 @@ const store = async (req, res) =>
 
     if(!errors.isEmpty())
     {
-        res.status(422).json(errors)
+        res.status(422).json({ errors: errors.mapped() })
     }
     else
     {
         try
         {
-            const salt = bcrypt.genSaltSync(10)
-            const passwordHash = bcrypt.hashSync(req.body.password, salt)
-            
-            req.body.password = passwordHash
-            req.body.account_type_id = 1
+            const { username, fullname, email, password, account_type_code } = req.body
 
-            const create = await Admin.create(req.body)
+            const salt = bcrypt.genSaltSync(10)
+            const passwordHash = bcrypt.hashSync(password, salt)
+            const accountType = await AccountType.where('code', account_type_code).first()
+
+            const create = await Admin.create({
+                uuid: uuidv4(),
+                username,
+                fullname,
+                email,
+                password: passwordHash,
+                account_type_id: accountType.id
+            })
+
             const createdData = await Admin.findByUUID(create)
 
             res.status(201)
@@ -38,6 +47,7 @@ const store = async (req, res) =>
         }
         catch(error)
         {
+            console.log(error)
             res.status(422).json(error)
         }
     }

@@ -33,6 +33,15 @@ const validate =
             body('password')
                 .not().isEmpty().withMessage('Password is required.')
                 .isLength({ min: 8, max: 25 }).withMessage('Minimum character length is 8 and maximum is 25.'),
+            body('password_confirmation')
+                .not().isEmpty().withMessage('Password confirmation is required.')
+                .isLength({ min: 8, max: 25 }).withMessage('Minimum character length is 8 and maximum is 25.')
+                .custom((value, { req }) =>
+                {
+                    if(value !== req.body.password) throw new Error('Password confirmation does not match password.')
+                
+                    return true
+                }),
         ],
         login:
         [
@@ -104,8 +113,7 @@ const validate =
             body('album_id').not().isEmpty().withMessage('Album is required.'),
             body('artists_id').not().isEmpty().withMessage('Artist is required.'),
             body('duration').not().isEmpty().withMessage('Duration is required.'),
-            body('slug').not().isEmpty().withMessage('Duration is required.'),
-            body('author_id').not().isEmpty().withMessage('Author is required.')
+            body('slug').not().isEmpty().withMessage('Duration is required.')
         ],
         update:
         [
@@ -113,8 +121,7 @@ const validate =
             body('album_id').not().isEmpty().withMessage('Album is required.'),
             body('artists_id').not().isEmpty().withMessage('Artist is required.'),
             body('duration').not().isEmpty().withMessage('Duration is required.'),
-            body('slug').not().isEmpty().withMessage('Duration is required.'),
-            body('author_id').not().isEmpty().withMessage('Author is required.')
+            body('slug').not().isEmpty().withMessage('Duration is required.')
         ],
     }
 }
