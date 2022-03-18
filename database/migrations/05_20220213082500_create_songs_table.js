@@ -12,6 +12,7 @@ exports.up = function(knex)
         table.string('duration', 10).notNullable()
         table.string('slug', 150).notNullable()
         table.specificType('author_id', 'CHAR(36)').notNullable()
+        table.foreign('author_id').references('uuid').inTable(tables.admin_accounts)
         table.timestamps(true, true)
     })
 }
