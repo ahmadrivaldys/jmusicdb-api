@@ -7,6 +7,8 @@ const tables =
     albums: 'tbl_albums',
     artists: 'tbl_artists',
     blacklisted_tokens: 'tbl_blacklisted_tokens',
+    catalog_types: 'tbl_catalog_types',
+    catalogs: 'tbl_catalogs',
     songs: 'tbl_songs',
     statuses: 'tbl_statuses',
     tags: 'tbl_tags',

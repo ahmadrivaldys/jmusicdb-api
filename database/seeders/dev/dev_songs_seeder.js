@@ -1,11 +1,11 @@
-const tables = require('../../config/tables')
+const tables = require('../../../config/tables')
 
 exports.seed = function(knex)
 {
     // Deletes all existing entries
     return knex(tables.songs).del().then(function()
     {
-        const author_id = 'a6e40b9f-98af-4871-bb52-bafd12c65d3b' // UUID
+        const author_id = '6cad46ed-7480-4baa-bddf-9a80de4e4e68' // UUID
 
         // Data
         data =
@@ -13,28 +13,28 @@ exports.seed = function(knex)
             {
                 id: '8fFivDvas9zYNulWQO608', // Nano ID (21)
                 title: 'Odoriko',
-                album_id: 1,
+                catalog_id: 'mzIq5afcEuITkbOngIo6-',
                 artists_id: 1,
                 duration: '3:50',
-                slug: '-',
+                slug: 'odoriko',
                 author_id
             },
             {
                 id: 'jUcUn1tYb2xrOWgAjioqa',
                 title: 'Tabiji',
-                album_id: 1,
+                catalog_id: 'RXZvJIn_SJ8kMIf2eNFjS',
                 artists_id: 2,
                 duration: '4:37',
-                slug: '-',
+                slug: 'tabiji',
                 author_id
             },
             {
                 id: 'zocyxmR0TzrWHPK35RTWu',
                 title: 'Kirari',
-                album_id: 1,
+                catalog_id: 'tleDyUOMOfkVZzW8WCtC0',
                 artists_id: 2,
                 duration: '3:51',
-                slug: '-',
+                slug: 'kirari',
                 author_id
             }
         ]
