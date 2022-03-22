@@ -6,6 +6,7 @@ exports.up = function(knex)
     {
         table.specificType('id', 'CHAR(21)').primary()
         table.string('title', 150).notNullable()
+        table.string('track_no', 3).notNullable()
         table.specificType('catalog_id', 'CHAR(21)').notNullable()
         table.foreign('catalog_id').references('id').inTable(tables.catalogs)
         table.string('artists_id', 15).notNullable()

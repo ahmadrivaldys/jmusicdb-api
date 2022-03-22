@@ -1,6 +1,8 @@
 const { validationResult } = require('express-validator')
 const { nanoid } = require('nanoid')
+const { slugify } = require('slugify')
 const { Song } = require('../models')
+const tables = require('../../config/tables')
 
 const index = async (req, res) =>
 {
@@ -35,27 +37,26 @@ const store = async (req, res) =>
     {
         try
         {
-            const { title, album_id, artists_id, release_date, duration, slug } = req.body
+            const { title, track_no, catalog_id, artists_id, release_date, duration } = req.body
+            const id = nanoid()
 
-            const create = await Song.create({
-                id: nanoid(),
+            await Song.create({
+                id,
                 title,
-                album_id,
+                track_no,
+                catalog_id,
                 artists_id,
                 release_date,
                 duration,
-                slug,
+                slug: slugify(title, { lower: true }),
                 author_id: req.uuid
             })
-
-            const createdData = await Song.findById(create)
-
+                                          
             res.status(201)
             res.json({
                 statusCode: 201,
                 statusMessage: 'Created',
-                message: 'Successfully created song data.',
-                data: createdData
+                message: 'Successfully created song data.'
             })
         }
         catch(error)
@@ -70,7 +71,20 @@ const show = async (req, res) =>
 {
     try
     {
-        const songData = await Song.findById(req.params.id)
+        const songData = await Song.where(`${tables.songs}.id`, req.params.id)
+        .join(tables.catalogs, `${tables.catalogs}.id`, `${tables.songs}.catalog_id`)
+        .join(tables.catalog_types, `${tables.catalog_types}.id`, `${tables.catalogs}.catalog_type_id`)
+        .select(
+            `${tables.songs}.id`,
+            `${tables.songs}.title`,
+            `${tables.songs}.track_no`,
+            `${tables.songs}.release_date`,
+            `${tables.songs}.duration`,
+            `${tables.songs}.slug`,
+            `${tables.catalogs}.title AS catalog`,
+            `${tables.catalog_types}.name AS catalog_type`,
+        )
+        .first()
 
         res.status(songData ? 200 : 404)
         res.json({
@@ -99,25 +113,23 @@ const update = async (req, res) =>
     {
         try
         {
-            const { title, album_id, artists_id, release_date, duration, slug } = req.body
+            const { title, track_no, catalog_id, artists_id, release_date, duration } = req.body
 
             const update = await Song.update({
                 title,
-                album_id,
+                track_no,
+                catalog_id,
                 artists_id,
                 release_date,
                 duration,
-                slug
+                slug: slugify(title, { lower: true })
             }).where('id', req.params.id)
-
-            const updatedData = await Song.findByUUID(req.params.id)
 
             res.status(update ? 200 : 404)
             res.json({
                 statusCode: update ? 200 : 404,
                 statusMessage: update ? 'OK' : 'Not Found',
-                message: update ? 'Successfully updated song data.' : 'Update failed: Song data not found.',
-                data: update ? updatedData : '-'
+                message: update ? 'Successfully updated song data.' : 'Update failed: Song data not found.'
             })
         }
         catch(error)

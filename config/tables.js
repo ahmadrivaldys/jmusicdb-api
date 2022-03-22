@@ -4,7 +4,6 @@ const tables =
 {
     account_types: 'tbl_account_types',
     admin_accounts: 'tbl_admin_accounts',
-    albums: 'tbl_albums',
     artists: 'tbl_artists',
     blacklisted_tokens: 'tbl_blacklisted_tokens',
     catalog_types: 'tbl_catalog_types',

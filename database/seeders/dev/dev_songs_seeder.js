@@ -13,6 +13,7 @@ exports.seed = function(knex)
             {
                 id: '8fFivDvas9zYNulWQO608', // Nano ID (21)
                 title: 'Odoriko',
+                track_no: '01',
                 catalog_id: 'mzIq5afcEuITkbOngIo6-',
                 artists_id: 1,
                 duration: '3:50',
@@ -22,6 +23,7 @@ exports.seed = function(knex)
             {
                 id: 'jUcUn1tYb2xrOWgAjioqa',
                 title: 'Tabiji',
+                track_no: '02',
                 catalog_id: 'RXZvJIn_SJ8kMIf2eNFjS',
                 artists_id: 2,
                 duration: '4:37',
@@ -31,6 +33,7 @@ exports.seed = function(knex)
             {
                 id: 'zocyxmR0TzrWHPK35RTWu',
                 title: 'Kirari',
+                track_no: '01',
                 catalog_id: 'tleDyUOMOfkVZzW8WCtC0',
                 artists_id: 2,
                 duration: '3:51',
