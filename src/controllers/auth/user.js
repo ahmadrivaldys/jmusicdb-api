@@ -18,13 +18,14 @@ const register = async (req, res) =>
         try
         {
             const { username, fullname, email, password, account_type_code } = req.body
+            const uuid = uuidv4()
 
             const salt = bcrypt.genSaltSync(10)
             const passwordHash = bcrypt.hashSync(password, salt)
-            const accountType = await AccountType.where('code', account_type_code).first()
+            const accountType = await AccountType.where('code', account_type_code).select('id').first()
 
-            const create = await User.create({
-                uuid: uuidv4(),
+            await User.create({
+                uuid,
                 username,
                 fullname,
                 email,
@@ -32,14 +33,11 @@ const register = async (req, res) =>
                 account_type_id: accountType.id
             })
 
-            const createdData = await User.findByUUID(create)
-
             res.status(201)
             res.json({
                 statusCode: 201,
                 statusMessage: 'Created',
-                message: 'Successfully created user account.',
-                data: createdData
+                message: 'Successfully created user account.'
             })
         }
         catch(error)

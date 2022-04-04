@@ -1,6 +1,6 @@
 const { validationResult } = require('express-validator')
 const { nanoid } = require('nanoid')
-const { slugify } = require('slugify')
+const slugify = require('slugify')
 const { Song } = require('../models')
 const tables = require('../../config/tables')
 

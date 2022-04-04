@@ -21,13 +21,14 @@ const store = async (req, res) =>
         try
         {
             const { username, fullname, email, password, account_type_code } = req.body
+            const uuid = uuidv4()
 
             const salt = bcrypt.genSaltSync(10)
             const passwordHash = bcrypt.hashSync(password, salt)
-            const accountType = await AccountType.where('code', account_type_code).first()
+            const accountType = await AccountType.where('code', account_type_code).select('id').first()
 
-            const create = await Admin.create({
-                uuid: uuidv4(),
+            await Admin.create({
+                uuid,
                 username,
                 fullname,
                 email,
@@ -35,14 +36,11 @@ const store = async (req, res) =>
                 account_type_id: accountType.id
             })
 
-            const createdData = await Admin.findByUUID(create)
-
             res.status(201)
             res.json({
                 statusCode: 201,
                 statusMessage: 'Created',
-                message: 'Successfully created admin account.',
-                data: createdData
+                message: 'Successfully created admin account.'
             })
         }
         catch(error)

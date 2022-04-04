@@ -44,7 +44,7 @@ const admin = async (req, res, next) =>
 {
     const verifiedAuthToken = await authenticate(req, res)
 
-    jwt.verify(verifiedAuthToken, process.env.JWT_SECRET_KEY, (err, decoded) =>
+    jwt.verify(verifiedAuthToken, process.env.JWT_SECRET_KEY, async (err, decoded) =>
     {
         if(err)
         {
@@ -57,21 +57,21 @@ const admin = async (req, res, next) =>
 
         req.uuid = decoded.uuid
         req.username = decoded.username
-    })
 
-    const checkAccount = await Admin.where({ uuid: req.uuid, username: req.username, account_type_id: 1 })
+        const checkAccount = await Admin.where({ uuid: decoded.uuid, username: decoded.username, account_type_id: 1 })
                                     .select('username', 'account_type_id').first()
 
-    if(!checkAccount)
-    {
-        return res.status(401).send({
-            statusCode: 401,
-            statusMessage: 'Unauthorized',
-            message: 'Only admin is allowed.'
-        })
-    }
+        if(!checkAccount)
+        {
+            return res.status(401).send({
+                statusCode: 401,
+                statusMessage: 'Unauthorized',
+                message: 'Only admin is allowed.'
+            })
+        }
 
-    next()
+        next()
+    })
 }
 
 module.exports = { admin }
