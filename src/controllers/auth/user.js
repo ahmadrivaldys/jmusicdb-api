@@ -54,7 +54,7 @@ const login = async (req, res) =>
 
     if(!errors.isEmpty())
     {
-        res.status(422).json(errors)
+        res.status(422).json({ errors: errors.mapped() })
     }
     else
     {

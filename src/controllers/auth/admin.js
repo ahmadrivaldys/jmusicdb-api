@@ -1,4 +1,3 @@
-const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { validationResult } = require('express-validator')
 const { Admin, Blacklist } = require('../../models')
@@ -10,26 +9,13 @@ const login = async (req, res) =>
 
     if(!errors.isEmpty())
     {
-        res.status(422).json(errors)
+        res.status(422).json({ errors: errors.mapped() })
     }
     else
     {
         try
-        {
-            const response = (message) =>
-            {
-                res.status(401).json({
-                    statusCode: 401,
-                    statusMessage: 'Unauthorized',
-                    message
-                })
-            }
-            
+        {            
             const checkUser = await Admin.where('username', req.body.username).first()
-            if(!checkUser) return response('There is no account with that username.')
-
-            const checkPassword = await bcrypt.compare(req.body.password, checkUser.password)
-            if(!checkPassword) return response('Incorrect password.')
 
             const token = jwt.sign({
                 uuid: checkUser.uuid,

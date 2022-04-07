@@ -14,6 +14,15 @@ const fileStorage = multer.diskStorage({
 app.use(bodyParser.json())
 app.use('/public/images', express.static(path.join(__dirname, 'public/images')))
 app.use(multer({ storage: fileStorage }).single('image'))
+
+app.use((req, res, next) =>
+{
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    next()
+})
+
 app.use('/v1', routes)
 
 const server = app.listen(process.env.APP_PORT, () =>

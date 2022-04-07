@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs')
 const { body } = require('express-validator')
 const { User, Admin } = require('../models')
 
@@ -48,10 +49,25 @@ const validate =
             body('username')
                 .not().isEmpty().withMessage('Username is required.')
                 .isAlphanumeric().withMessage('Only letters and numbers are allowed.')
-                .isLength({ min: 5, max: 20 }).withMessage('Minimum character length is 5 and maximum is 20.'),
+                .custom(value =>
+                {
+                    return Admin.where('username', value).first().then(user =>
+                    {
+                        if(!user) return Promise.reject('There is no account with that username.')
+                    })
+                }),
             body('password')
                 .not().isEmpty().withMessage('Password is required.')
-                .isLength({ min: 8, max: 25 }).withMessage('Minimum character length is 8 and maximum is 25.')
+                .custom(async (value, { req }) =>
+                {
+                    const checkUser = await Admin.where('username', req.body.username).first()
+                    
+                    if(checkUser)
+                    {
+                        const checkPassword = await bcrypt.compare(value, checkUser.password)
+                        if(!checkPassword) return Promise.reject('Incorrect password.')
+                    }
+                })
         ]
     },
     auth:
@@ -99,10 +115,25 @@ const validate =
             body('username')
                 .not().isEmpty().withMessage('Username is required.')
                 .isAlphanumeric().withMessage('Only letters and numbers are allowed.')
-                .isLength({ min: 5, max: 20 }).withMessage('Minimum character length is 5 and maximum is 20.'),
+                .custom(value =>
+                {
+                    return Admin.where('username', value).first().then(user =>
+                    {
+                        if(!user) return Promise.reject('There is no account with that username.')
+                    })
+                }),
             body('password')
                 .not().isEmpty().withMessage('Password is required.')
-                .isLength({ min: 8, max: 25 }).withMessage('Minimum character length is 8 and maximum is 25.')
+                .custom(async (value, { req }) =>
+                {
+                    const checkUser = await Admin.where('username', req.body.username).first()
+                    
+                    if(checkUser)
+                    {
+                        const checkPassword = await bcrypt.compare(value, checkUser.password)
+                        if(!checkPassword) return Promise.reject('Incorrect password.')
+                    }
+                })
         ]
     },
     song:
