@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken')
 const { validationResult } = require('express-validator')
+const { nanoid } = require('nanoid')
 const { Admin, Blacklist } = require('../../models')
 require('dotenv').config()
 
@@ -80,7 +81,7 @@ const logout = async (req, res) =>
             })
         }
 
-        await Blacklist.create({ token: authToken })
+        await Blacklist.create({ id: nanoid(8), token: authToken })
 
         res.status(200)
         res.json({
