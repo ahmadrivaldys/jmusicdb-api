@@ -8,6 +8,9 @@ const index = async (req, res) =>
 {
     try
     {
+        const currentPage = req.query.page || 1
+        const perPage = req.query.perPage || 5
+
         const songs = await Song.all()
 
         res.status(200)
@@ -15,7 +18,10 @@ const index = async (req, res) =>
             statusCode: 200,
             statusMessage: 'OK',
             message: 'Successfully fetched all song data.',
-            data: songs
+            data: songs,
+            totalData: songs.length,
+            perPage: parseInt(perPage),
+            currentPage: parseInt(currentPage)
         })
     }
     catch(error)
