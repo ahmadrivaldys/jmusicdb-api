@@ -38,6 +38,11 @@ module.exports = (tableName) =>
         return console.log('Invalid format.')
     }
 
+    const join = (tableJoin, tableJoinId, currTableId) =>
+    {
+        return database(tableName).join(tableJoin, tableJoinId, currTableId)
+    }
+
     return {
         all,
         create,
@@ -46,6 +51,7 @@ module.exports = (tableName) =>
         update,
         destroy,
         select,
-        where
+        where,
+        join
     }
 }
