@@ -1,8 +1,9 @@
-const router = require('express').Router()
-const admin  = require('./admin')
-const album  = require('./album')
-const auth   = require('./auth')
-const song   = require('./song')
+const router  = require('express').Router()
+const admin   = require('./admin')
+const album   = require('./album')
+const auth    = require('./auth')
+const catalog = require('./catalog')
+const song    = require('./song')
 
 router.get('/', (req, res) =>
 {
@@ -14,6 +15,7 @@ router.get('/', (req, res) =>
 router.use(admin)
 router.use(album)
 router.use(auth)
+router.use(catalog)
 router.use(song)
 
 module.exports = router
