@@ -59,7 +59,7 @@ const admin = async (req, res, next) =>
         req.username = decoded.username
 
         const checkAccount = await Admin.where({ uuid: decoded.uuid, username: decoded.username, account_type_id: 1 })
-                                    .select('username', 'account_type_id').first()
+                                        .select('username', 'account_type_id').first()
 
         if(!checkAccount)
         {

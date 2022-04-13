@@ -141,15 +141,19 @@ const validate =
         store:
         [
             body('title').not().isEmpty().withMessage('Title is required.'),
+            body('track_no').not().isEmpty().withMessage('Track No. is required.'),
             body('catalog_id').not().isEmpty().withMessage('Catalog is required.'),
-            body('artists_id').not().isEmpty().withMessage('Artist is required.'),
+            // body('artists_id').not().isEmpty().withMessage('Artist is required.'),
+            // body('release_date').not().isEmpty().withMessage('Release Date is required.'),
             body('duration').not().isEmpty().withMessage('Duration is required.')
         ],
         update:
         [
             body('title').not().isEmpty().withMessage('Title is required.'),
+            body('track_no').not().isEmpty().withMessage('Track No. is required.'),
             body('catalog_id').not().isEmpty().withMessage('Catalog is required.'),
-            body('artists_id').not().isEmpty().withMessage('Artist is required.'),
+            // body('artists_id').not().isEmpty().withMessage('Artist is required.'),
+            // body('release_date').not().isEmpty().withMessage('Release Date is required.'),
             body('duration').not().isEmpty().withMessage('Duration is required.')
         ],
     }
