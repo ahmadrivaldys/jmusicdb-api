@@ -47,7 +47,7 @@ const store = async (req, res) =>
 
     if(!errors.isEmpty())
     {
-        res.status(422).json(errors)
+        res.status(422).json({ errors: errors.mapped() })
     }
     else
     {
@@ -123,7 +123,7 @@ const update = async (req, res) =>
 
     if(!errors.isEmpty())
     {
-        res.status(422).json(errors)
+        res.status(422).json({ errors: errors.mapped() })
     }
     else
     {
