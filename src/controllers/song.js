@@ -11,28 +11,21 @@ const index = async (req, res) =>
         const currentPage = req.query.page || 1
         const perPage = req.query.perPage || 5
 
-        const songData = await Song.join(`${tables.catalogs}`, `${tables.catalogs}.id`, `${tables.songs}.catalog_id`)
-        .join(tables.catalog_types, `${tables.catalog_types}.id`, `${tables.catalogs}.catalog_type_id`)
-        .select(
-            `${tables.songs}.id`,
-            `${tables.songs}.title`,
-            `${tables.songs}.track_no`,
-            `${tables.songs}.release_date`,
-            `${tables.songs}.duration`,
-            `${tables.songs}.slug`,
-            `${tables.catalogs}.title AS catalog`
-        )
-
-        res.status(200)
-        res.json({
-            statusCode: 200,
-            statusMessage: 'OK',
-            message: 'Successfully fetched all song data.',
-            data: songData,
-            totalData: songData.length,
-            perPage: parseInt(perPage),
-            currentPage: parseInt(currentPage)
-        })
+        Song
+            .fetchAll({ withRelated: ['author', 'catalog.type'] })
+            .then(songs =>
+            {
+                res.status(200)
+                res.json({
+                    statusCode: 200,
+                    statusMessage: 'OK',
+                    message: 'Successfully fetched all song data.',
+                    data: songs,
+                    totalData: songs.length,
+                    perPage: parseInt(perPage),
+                    currentPage: parseInt(currentPage)
+                })
+            })
     }
     catch(error)
     {

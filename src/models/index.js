@@ -1,23 +1,18 @@
-const model = require('./base-model')
-const table = require('../../config/tables')
-
-const AccountType = model(table.account_types)
-const Admin       = model(table.admin_accounts)
-const Album       = model(table.albums)
-const Artist      = model(table.artists)
-const Blacklist   = model(table.blacklisted_tokens)
-const CatalogType = model(table.catalog_types)
-const Catalog     = model(table.catalogs)
-const Song        = model(table.songs)
-const User        = model(table.user_accounts)
+const AccountType = require('./account_type')
+const Admin = require('./admin')
+const Artist = require('./artist')
+const BlacklistedToken = require('./blacklisted_token')
+const CatalogType = require('./catalog_type')
+const Catalog = require('./catalog')
+const Song = require('./song')
+const User = require('./user')
 
 module.exports =
 {
     AccountType,
     Admin,
-    Album,
     Artist,
-    Blacklist,
+    BlacklistedToken,
     CatalogType,
     Catalog,
     Song,
