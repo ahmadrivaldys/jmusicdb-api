@@ -15,25 +15,31 @@ const login = async (req, res) =>
     else
     {
         try
-        {            
-            const checkUser = await Admin.where('username', req.body.username).first()
-
-            const token = jwt.sign({
-                uuid: checkUser.uuid,
-                username: checkUser.username
-            },
-            process.env.JWT_SECRET_KEY,
-            {
-                expiresIn: '7d'
-            })
-
-            res.status(200)
-            res.json({
-                statusCode: 200,
-                statusMessage: 'OK',
-                message: 'Log in successful.',
-                token
-            })
+        {
+            Admin
+                .where('username', req.body.username)
+                .fetch()
+                .then(admin =>
+                {
+                    return jwt.sign({
+                        uuid: admin.uuid,
+                        username: admin.username
+                    },
+                    process.env.JWT_SECRET_KEY,
+                    {
+                        expiresIn: '7d'
+                    })
+                })
+                .then(token =>
+                {
+                    res.status(200)
+                    res.json({
+                        statusCode: 200,
+                        statusMessage: 'OK',
+                        message: 'Log in successful.',
+                        token
+                    })
+                })
         }
         catch(error)
         {

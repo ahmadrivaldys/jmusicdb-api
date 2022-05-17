@@ -14,10 +14,13 @@ const validate =
                 .isLength({ min: 5, max: 20 }).withMessage('Minimum character length is 5 and maximum is 20.')
                 .custom(value =>
                 {
-                    return Admin.where('username', value).first().then(user =>
-                    {
-                        if(user) return Promise.reject('Username already in use.')
-                    })
+                    return Admin
+                        .where('username', value)
+                        .fetch()
+                        .then(admin =>
+                        {
+                            if(admin) return Promise.reject('Username already in use.')
+                        })
                 }),
             body('fullname')
                 .isAlpha('en-US', { ignore: '\s' }).isLength({ min: 5, max: 50 }).withMessage('Minimum character length is 5 and maximum is 50.'),
@@ -26,10 +29,13 @@ const validate =
                 .isEmail().withMessage('Invalid e-mail.')
                 .custom(value =>
                 {
-                    return Admin.where('email', value).first().then(user =>
-                    {
-                        if(user) return Promise.reject('E-mail already in use.')
-                    })
+                    return Admin
+                        .where('email', value)
+                        .fetch()
+                        .then(admin =>
+                        {
+                            if(admin) return Promise.reject('E-mail already in use.')
+                        })
                 }),
             body('password')
                 .not().isEmpty().withMessage('Password is required.')
@@ -51,22 +57,29 @@ const validate =
                 .isAlphanumeric().withMessage('Only letters and numbers are allowed.')
                 .custom(value =>
                 {
-                    return Admin.where('username', value).first().then(user =>
-                    {
-                        if(!user) return Promise.reject('There is no account with that username.')
-                    })
+                    return Admin
+                        .where('username', value)
+                        .fetch()
+                        .catch(error =>
+                        {
+                            if(error) return Promise.reject('There is no account with that username.')
+                        })
                 }),
             body('password')
                 .not().isEmpty().withMessage('Password is required.')
-                .custom(async (value, { req }) =>
+                .custom((value, { req }) =>
                 {
-                    const checkUser = await Admin.where('username', req.body.username).first()
-                    
-                    if(checkUser)
-                    {
-                        const checkPassword = await bcrypt.compare(value, checkUser.password)
-                        if(!checkPassword) return Promise.reject('Incorrect password.')
-                    }
+                    return Admin
+                        .where('username', req.body.username)
+                        .fetch()
+                        .then(admin =>
+                        {
+                            return bcrypt.compare(value, admin.toJSON().password)
+                        })
+                        .then(result =>
+                        {
+                            if(!result) return Promise.reject('Incorrect password.')
+                        })
                 })
         ]
     },
@@ -80,10 +93,13 @@ const validate =
                 .isLength({ min: 5, max: 20 }).withMessage('Minimum character length is 5 and maximum is 20.')
                 .custom(value =>
                 {
-                    return User.where('username', value).first().then(user =>
-                    {
-                        if(user) return Promise.reject('Username already in use.')
-                    })
+                    return User
+                        .where('username', value)
+                        .fetch()
+                        .then(user =>
+                        {
+                            if(user) return Promise.reject('Username already in use.')
+                        })
                 }),
             body('fullname')
                 .isAlpha('en-US', { ignore: '\s' }).isLength({ min: 5, max: 50 }).withMessage('Minimum character length is 5 and maximum is 50.'),
@@ -92,10 +108,13 @@ const validate =
                 .isEmail().withMessage('Invalid e-mail.')
                 .custom(value =>
                 {
-                    return User.where('email', value).first().then(user =>
-                    {
-                        if(user) return Promise.reject('E-mail already in use.')
-                    })
+                    return User
+                        .where('email', value)
+                        .first()
+                        .then(user =>
+                        {
+                            if(user) return Promise.reject('E-mail already in use.')
+                        })
                 }),
             body('password')
                 .not().isEmpty().withMessage('Password is required.')
@@ -117,22 +136,29 @@ const validate =
                 .isAlphanumeric().withMessage('Only letters and numbers are allowed.')
                 .custom(value =>
                 {
-                    return Admin.where('username', value).first().then(user =>
-                    {
-                        if(!user) return Promise.reject('There is no account with that username.')
-                    })
+                    return User
+                        .where('username', value)
+                        .fetch()
+                        .catch(error =>
+                        {
+                            if(error) return Promise.reject('There is no account with that username.')
+                        })
                 }),
             body('password')
                 .not().isEmpty().withMessage('Password is required.')
-                .custom(async (value, { req }) =>
+                .custom((value, { req }) =>
                 {
-                    const checkUser = await Admin.where('username', req.body.username).first()
-                    
-                    if(checkUser)
-                    {
-                        const checkPassword = await bcrypt.compare(value, checkUser.password)
-                        if(!checkPassword) return Promise.reject('Incorrect password.')
-                    }
+                    return User
+                        .where('username', req.body.username)
+                        .fetch()
+                        .then(user =>
+                        {
+                            return bcrypt.compare(value, user.toJSON().password)
+                        })
+                        .then(result =>
+                        {
+                            if(!result) return Promise.reject('Incorrect password.')
+                        })
                 })
         ]
     },

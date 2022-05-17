@@ -12,7 +12,13 @@ const index = async (req, res) =>
         const perPage = req.query.perPage || 5
 
         Song
-            .fetchAll({ withRelated: ['author', 'catalog.type'] })
+            .fetchAll({
+                // withRelated: [{
+                //     'author': qb => qb.select('uuid', 'fullname'),
+                //     'catalog': qb => qb.select('id', 'title'),
+                // }]
+                withRelated: ['author', 'catalog.type']
+            })
             .then(songs =>
             {
                 res.status(200)
