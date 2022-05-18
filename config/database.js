@@ -1,6 +1,6 @@
 require('dotenv').config()
 
-const database = require('knex')({
+const knex = require('knex')({
     client: process.env.DB_CLIENT,
     connection:
     {
@@ -11,4 +11,6 @@ const database = require('knex')({
     }
 })
 
-module.exports = database
+const bookshelf = require('bookshelf')(knex)
+
+module.exports = bookshelf

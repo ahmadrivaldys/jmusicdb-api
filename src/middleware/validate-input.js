@@ -74,7 +74,7 @@ const validate =
                         .fetch()
                         .then(admin =>
                         {
-                            return bcrypt.compare(value, admin.toJSON().password)
+                            return bcrypt.compare(value, admin.toJSON({ hidden: [] }).password)
                         })
                         .then(result =>
                         {

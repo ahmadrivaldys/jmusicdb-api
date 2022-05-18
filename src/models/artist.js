@@ -1,8 +1,7 @@
 const table = require('../../config/tables')
 const database = require('../../config/database')
-const bookshelf = require('bookshelf')(database)
 
-const Artist = bookshelf.model('Artist', {
+const Artist = database.model('Artist', {
     tableName: table.artists
 })
 

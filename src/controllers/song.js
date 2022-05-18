@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator')
 const { nanoid } = require('nanoid')
 const slugify = require('slugify')
-const { Song } = require('../models')
+const { Song, Catalog } = require('../models')
 const tables = require('../../config/tables')
 
 const index = async (req, res) =>
@@ -17,7 +17,7 @@ const index = async (req, res) =>
                 //     'author': qb => qb.select('uuid', 'fullname'),
                 //     'catalog': qb => qb.select('id', 'title'),
                 // }]
-                withRelated: ['author', 'catalog.type']
+                withRelated: ['catalog.type', 'author']
             })
             .then(songs =>
             {
@@ -26,12 +26,29 @@ const index = async (req, res) =>
                     statusCode: 200,
                     statusMessage: 'OK',
                     message: 'Successfully fetched all song data.',
-                    data: songs,
+                    songs,
                     totalData: songs.length,
                     perPage: parseInt(perPage),
                     currentPage: parseInt(currentPage)
                 })
             })
+        // Catalog
+        //     .fetchAll({
+        //         withRelated: ['type', 'songs', 'author']
+        //     })
+        //     .then(cat =>
+        //     {
+        //         res.status(200)
+        //         res.json({
+        //             statusCode: 200,
+        //             statusMessage: 'OK',
+        //             message: 'Successfully fetched all catalog data.',
+        //             data: cat,
+        //             totalData: cat.length,
+        //             perPage: parseInt(perPage),
+        //             currentPage: parseInt(currentPage)
+        //         })
+        //     })
     }
     catch(error)
     {

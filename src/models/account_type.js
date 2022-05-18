@@ -1,8 +1,7 @@
 const table = require('../../config/tables')
 const database = require('../../config/database')
-const bookshelf = require('bookshelf')(database)
 
-const AccountType = bookshelf.model('AccountType', {
+const AccountType = database.model('AccountType', {
     tableName: table.account_types
 })
 
