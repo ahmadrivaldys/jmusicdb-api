@@ -32,19 +32,20 @@ const index = async (req, res) =>
                     currentPage: parseInt(currentPage)
                 })
             })
+
         // Catalog
         //     .fetchAll({
         //         withRelated: ['type', 'songs', 'author']
         //     })
-        //     .then(cat =>
+        //     .then(catalogs =>
         //     {
         //         res.status(200)
         //         res.json({
         //             statusCode: 200,
         //             statusMessage: 'OK',
         //             message: 'Successfully fetched all catalog data.',
-        //             data: cat,
-        //             totalData: cat.length,
+        //             catalogs,
+        //             totalData: catalogs.length,
         //             perPage: parseInt(perPage),
         //             currentPage: parseInt(currentPage)
         //         })
