@@ -5,7 +5,6 @@ const multer     = require('multer')
 const path       = require('path')
 const routes     = require('./src/routes')
 const errorHandler = require('./src/middlewares/error-handler')
-require('dotenv').config()
 
 const fileStorage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, 'images'),

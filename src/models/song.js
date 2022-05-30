@@ -1,10 +1,6 @@
-
-const { Model } = require('objection')
-const knex = require('../../config/database')
+const { Model, knex } = require('./init-model')
 const Admin = require('./admin')
 const Catalog = require('./catalog')
-
-Model.knex(knex)
 
 class Song extends Model
 {
@@ -40,4 +36,4 @@ class Song extends Model
     }
 }
 
-module.exports = Song
+module.exports = { Song, knex }

@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator')
 const { nanoid } = require('nanoid')
 const slugify = require('slugify')
-const Song = require('../../models/song')
+const { Song, knex } = require('../../models/song')
 
 const index = async (req, res, next) =>
 {
@@ -38,7 +38,7 @@ const index = async (req, res, next) =>
     }
 }
 
-const store = async (req, res) =>
+const store = async (req, res, next) =>
 {
     const errors = validationResult(req)
 
@@ -52,29 +52,31 @@ const store = async (req, res) =>
         const { title, track_no, catalog_id, artists_id, release_date, duration } = req.body
         const id = nanoid()
 
-        await Song.create({
-            id,
-            title,
-            track_no,
-            catalog_id,
-            artists_id,
-            release_date,
-            duration,
-            slug: slugify(title, { lower: true }),
-            author_id: req.uuid
-        })
+        await Song.query()
+            .insert({
+                id,
+                title,
+                track_no,
+                catalog_id,
+                artists_id,
+                release_date,
+                duration,
+                slug: slugify(title, { lower: true }),
+                author_id: req.uuid
+            })
                                         
-        res.status(201)
-        res.json({
-            statusCode: 201,
-            statusMessage: 'Created',
-            message: 'Successfully created song data.'
-        })
+        return res.status(201)
+            .json({
+                statusCode: 201,
+                statusText: 'Created',
+                message: 'Successfully created song data.'
+            })
     }
     catch(error)
     {
         console.log(error)
-        res.status(422).json(error)
+        if(!error.statusCode) return res.status(422).json(error)
+        next(error)
     }
 }
 
@@ -116,46 +118,55 @@ const show = async (req, res, next) =>
     }
 }
 
-const update = async (req, res) =>
+const update = async (req, res, next) =>
 {
     const errors = validationResult(req)
 
     if(!errors.isEmpty())
     {
-        res.status(422).json({ errors: errors.mapped() })
+        return res.status(422).json({ errors: errors.mapped() })
     }
-    else
+    
+    try
     {
-        try
-        {
-            const { title, track_no, catalog_id, artists_id, release_date, duration } = req.body
+        const { title, track_no, catalog_id, artists_id, release_date, duration } = req.body
 
-            const update = await Song.update({
+        const update = await Song.query()
+            .where('id', req.params.id)
+            .update({
                 title,
                 track_no,
                 catalog_id,
                 artists_id,
                 release_date,
                 duration,
-                slug: slugify(title, { lower: true })
-            }).where('id', req.params.id)
-
-            res.status(update ? 200 : 404)
-            res.json({
-                statusCode: update ? 200 : 404,
-                statusMessage: update ? 'OK' : 'Not Found',
-                message: update ? 'Successfully updated song data.' : 'Update failed: Song data not found.'
+                slug: slugify(title, { lower: true }),
+                updated_at: knex.fn.now()
             })
-        }
-        catch(error)
+
+        if(!update)
         {
-            console.log(error)
-            res.status(422).json(error)
+            const error = new Error('Update failed: Song data not found.')
+            error.statusCode = 404
+            throw error
         }
+
+        return res.status(200)
+            .json({
+                statusCode: 200,
+                statusText: 'OK',
+                message: 'Successfully updated song data.'
+            })
+    }
+    catch(error)
+    {
+        console.log(error)
+        if(!error.statusCode) return res.status(422).json(error)
+        next(error)
     }
 }
 
-const destroy = async (req, res) =>
+const destroy = async (req, res, next) =>
 {
     try
     {
@@ -164,7 +175,7 @@ const destroy = async (req, res) =>
         res.status(deleted ? 200 : 404)
         res.json({
             statusCode: deleted ? 200 : 404,
-            statusMessage: deleted ? 'OK' : 'Not Found',
+            statusText: deleted ? 'OK' : 'Not Found',
             message: deleted ? 'Successfully deleted song data.' : 'Delete failed: Song data not found.'
         })
     }

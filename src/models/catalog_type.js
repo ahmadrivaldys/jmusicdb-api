@@ -1,8 +1,4 @@
-
-const { Model } = require('objection')
-const knex = require('../../config/database')
-
-Model.knex(knex)
+const { Model, knex } = require('./init-model')
 
 class CatalogType extends Model
 {
@@ -12,4 +8,4 @@ class CatalogType extends Model
     }
 }
 
-module.exports = CatalogType
+module.exports = { CatalogType, knex }

@@ -1,8 +1,7 @@
 const jwt = require('jsonwebtoken')
 const { validationResult } = require('express-validator')
 const { nanoid } = require('nanoid')
-const Admin = require('../../models/admin')
-require('dotenv').config()
+const { Admin } = require('../../models/admin')
 
 const login = async (req, res) =>
 {

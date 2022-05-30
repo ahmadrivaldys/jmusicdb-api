@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
-const Admin = require('../models/admin')
-const BlacklistedToken = require('../models/blacklisted_token')
+const { Admin } = require('../models/admin')
+const { BlacklistedToken } = require('../models/blacklisted_token')
 
 const authenticate = async (headers) =>
 {
@@ -46,7 +46,9 @@ const authenticate = async (headers) =>
                 }
                 
                 console.error('JWT Error:', err.message)
-                return res.status(422).json(err.message)
+                const error = new Error(err.message)
+                error.statusCode = 401
+                throw error
             }
 
             return decoded
@@ -77,41 +79,6 @@ const admin = async (req, res, next) =>
         }
     
         next()
-
-        // jwt.verify(verifiedAuthToken, process.env.JWT_SECRET_KEY, async (err, decoded) =>
-        // {
-        //     if(err)
-        //     {
-        //         if(err.name === 'TokenExpiredError')
-        //         {
-        //             const error = new Error('Invalid token: token has expired. Please log in again.')
-        //             error.statusCode = 401
-        //             throw error
-        //         }
-                
-        //         console.error('JWT Error:', err.message)
-        //         return res.status(422).json(err.message)
-        //     }
-
-        //     req.uuid = decoded.uuid
-        //     req.username = decoded.username
-
-        //     const checkAccount = await Admin.query()
-        //         .where({ uuid: decoded.uuid, username: decoded.username, account_type_id: 1 })
-        //         .select('username', 'account_type_id')
-        //         .first()
-            
-        //     if(!checkAccount)
-        //     {
-        //         return res.status(401).send({
-        //             statusCode: 401,
-        //             statusMessage: 'Unauthorized',
-        //             message: 'Only admin is allowed.'
-        //         })
-        //     }
-        
-        //     next()
-        // })
     }
     catch(error)
     {
