@@ -3,4 +3,4 @@ const knex = require('../../config/database')
 
 Model.knex(knex)
 
-module.exports = { Model, knex }
+module.exports = Model

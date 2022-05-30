@@ -1,7 +1,7 @@
 
-const { Model, knex } = require('./init-model')
-const { Song } = require('./song')
-const { CatalogType } = require('./catalog_type')
+const Model = require('./init-model')
+const Song = require('./song')
+const CatalogType = require('./catalog_type')
 
 class Catalog extends Model
 {
@@ -37,4 +37,4 @@ class Catalog extends Model
     }
 }
 
-module.exports = { Catalog, knex }
+module.exports = Catalog

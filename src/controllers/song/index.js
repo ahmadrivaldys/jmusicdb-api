@@ -1,7 +1,8 @@
 const { validationResult } = require('express-validator')
 const { nanoid } = require('nanoid')
 const slugify = require('slugify')
-const { Song, knex } = require('../../models/song')
+const knex = require('../../../config/database')
+const Song = require('../../models/song')
 
 const index = async (req, res, next) =>
 {
@@ -18,6 +19,13 @@ const index = async (req, res, next) =>
                 selectCatalogType: builder => builder.select('name'),
                 selectAuthor: builder => builder.select('fullname')
             })
+
+        if(!songs)
+        {
+            const error = new Error('Song data not found.')
+            error.statusCode = 404
+            throw error
+        }
         
         return res.status(200)
             .json({
@@ -33,7 +41,6 @@ const index = async (req, res, next) =>
     catch(error)
     {
         console.log(error)
-        if(!error.statusCode) return res.status(422).json(error)
         next(error)
     }
 }
@@ -75,7 +82,6 @@ const store = async (req, res, next) =>
     catch(error)
     {
         console.log(error)
-        if(!error.statusCode) return res.status(422).json(error)
         next(error)
     }
 }
@@ -113,7 +119,6 @@ const show = async (req, res, next) =>
     catch(error)
     {
         console.log(error)
-        if(!error.statusCode) return res.status(422).json(error)
         next(error)
     }
 }
@@ -131,7 +136,7 @@ const update = async (req, res, next) =>
     {
         const { title, track_no, catalog_id, artists_id, release_date, duration } = req.body
 
-        const update = await Song.query()
+        const updated = await Song.query()
             .where('id', req.params.id)
             .update({
                 title,
@@ -144,7 +149,7 @@ const update = async (req, res, next) =>
                 updated_at: knex.fn.now()
             })
 
-        if(!update)
+        if(!updated)
         {
             const error = new Error('Update failed: Song data not found.')
             error.statusCode = 404
@@ -161,7 +166,6 @@ const update = async (req, res, next) =>
     catch(error)
     {
         console.log(error)
-        if(!error.statusCode) return res.status(422).json(error)
         next(error)
     }
 }
@@ -170,19 +174,28 @@ const destroy = async (req, res, next) =>
 {
     try
     {
-        const deleted = await Song.destroy(req.params.id)
+        const deleted = await Song.query()
+            .where('id', req.params.id)
+            .del()
 
-        res.status(deleted ? 200 : 404)
-        res.json({
-            statusCode: deleted ? 200 : 404,
-            statusText: deleted ? 'OK' : 'Not Found',
-            message: deleted ? 'Successfully deleted song data.' : 'Delete failed: Song data not found.'
-        })
+        if(!deleted)
+        {
+            const error = new Error('Delete failed: Song data not found.')
+            error.statusCode = 404
+            throw error
+        }
+
+        return res.status(200)
+            .json({
+                statusCode: 200,
+                statusText: 'OK',
+                message: 'Successfully deleted song data.'
+            })
     }
     catch(error)
     {
         console.log(error)
-        res.status(422).json(error)
+        next(error)
     }
 }
 

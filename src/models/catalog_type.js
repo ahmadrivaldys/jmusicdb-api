@@ -1,4 +1,4 @@
-const { Model, knex } = require('./init-model')
+const Model = require('./init-model')
 
 class CatalogType extends Model
 {
@@ -8,4 +8,4 @@ class CatalogType extends Model
     }
 }
 
-module.exports = { CatalogType, knex }
+module.exports = CatalogType

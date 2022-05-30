@@ -2,28 +2,32 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { validationResult } = require('express-validator')
 const { v4: uuidv4 } = require('uuid')
-// const { AccountType, Blacklist, User } = require('../../models')
+const AccountType = require('../../models/account_type')
+const User = require('../../models/user')
 
-const register = async (req, res) =>
+const register = async (req, res, next) =>
 {
     const errors = validationResult(req)
 
     if(!errors.isEmpty())
     {
-        res.status(422).json({ errors: errors.mapped() })
+        return res.status(422).json({ errors: errors.mapped() })
     }
-    else
+    
+    try
     {
-        try
-        {
-            const { username, fullname, email, password, account_type_code } = req.body
-            const uuid = uuidv4()
+        const { username, fullname, email, password, account_type_code } = req.body
+        const uuid = uuidv4()
 
-            const salt = bcrypt.genSaltSync(10)
-            const passwordHash = bcrypt.hashSync(password, salt)
-            const accountType = await AccountType.where('code', account_type_code).select('id').first()
+        const salt = bcrypt.genSaltSync(10)
+        const passwordHash = bcrypt.hashSync(password, salt)
+        const accountType = await AccountType.query()
+            .where('code', account_type_code)
+            .select('id')
+            .first()
 
-            await User.create({
+        await User.query()
+            .insert({
                 uuid,
                 username,
                 fullname,
@@ -32,70 +36,56 @@ const register = async (req, res) =>
                 account_type_id: accountType.id
             })
 
-            res.status(201)
-            res.json({
+        return res.status(201)
+            .json({
                 statusCode: 201,
-                statusMessage: 'Created',
+                statusText: 'Created',
                 message: 'Successfully created user account.'
             })
-        }
-        catch(error)
-        {
-            console.log(error)
-            res.status(422).json(error)
-        }
+    }
+    catch(error)
+    {
+        console.log(error)
+        next(error)
     }
 }
 
-const login = async (req, res) =>
+const login = async (req, res, next) =>
 {
     const errors = validationResult(req)
 
     if(!errors.isEmpty())
     {
-        res.status(422).json({ errors: errors.mapped() })
+        return res.status(422).json({ errors: errors.mapped() })
     }
-    else
+    
+    try
     {
-        try
-        {
-            const response = (message) =>
-            {
-                res.status(401).json({
-                    statusCode: 401,
-                    statusMessage: 'Unauthorized',
-                    message
-                })
-            }
-            
-            const checkUser = await User.where('username', req.body.username).first()
-            if(!checkUser) return response('There is no account with that username.')
+        const getAccount = await User.query()
+            .where('username', req.body.username)
+            .first()
 
-            const checkPassword = await bcrypt.compare(req.body.password, checkUser.password)
-            if(!checkPassword) return response('Incorrect password.')
-
-            const token = jwt.sign({
-                uuid: checkUser.uuid,
-                username: checkUser.username
+        const generateToken = jwt.sign({
+                uuid: getAccount.uuid,
+                username: getAccount.username
             },
             process.env.JWT_SECRET_KEY,
             {
                 expiresIn: '7d'
             })
 
-            res.status(200)
-            res.json({
+        return res.status(200)
+            .json({
                 statusCode: 200,
-                statusMessage: 'OK',
+                statusText: 'OK',
                 message: 'Log in successful.',
-                token
+                token: generateToken
             })
-        }
-        catch(error)
-        {
-            console.log(error)
-            res.status(422).json(error)
-        }
+    }
+    catch(error)
+    {
+        console.log(error)
+        next(error)
     }
 }
 

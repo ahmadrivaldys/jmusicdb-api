@@ -1,5 +1,4 @@
-
-const { Model, knex } = require('./init-model')
+const Model = require('./init-model')
 
 class Admin extends Model
 {
@@ -9,4 +8,4 @@ class Admin extends Model
     }
 }
 
-module.exports = { Admin, knex }
+module.exports = Admin

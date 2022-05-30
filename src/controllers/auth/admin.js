@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const { validationResult } = require('express-validator')
 const { nanoid } = require('nanoid')
-const { Admin } = require('../../models/admin')
+const Admin = require('../../models/admin')
 
 const login = async (req, res) =>
 {
@@ -38,7 +38,7 @@ const login = async (req, res) =>
     catch(error)
     {
         console.log(error)
-        return res.status(422).json(error)
+        next(error)
     }
 }
 
