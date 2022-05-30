@@ -1,6 +1,6 @@
 const { Model, knex } = require('./init-model')
-const Admin = require('./admin')
-const Catalog = require('./catalog')
+const { Admin } = require('./admin')
+const { Catalog } = require('./catalog')
 
 class Song extends Model
 {

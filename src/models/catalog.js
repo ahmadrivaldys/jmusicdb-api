@@ -1,7 +1,7 @@
 
 const { Model, knex } = require('./init-model')
-const Song = require('./song')
-const CatalogType = require('./catalog_type')
+const { Song } = require('./song')
+const { CatalogType } = require('./catalog_type')
 
 class Catalog extends Model
 {
