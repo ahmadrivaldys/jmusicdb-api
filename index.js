@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const multer     = require('multer')
 const path       = require('path')
 const routes     = require('./src/routes')
+const errorHandler = require('./src/middlewares/error-handler')
 require('dotenv').config()
 
 const fileStorage = multer.diskStorage({
@@ -24,6 +25,7 @@ app.use((req, res, next) =>
 })
 
 app.use('/v1', routes)
+app.use(errorHandler)
 
 const server = app.listen(process.env.APP_PORT, () =>
 {

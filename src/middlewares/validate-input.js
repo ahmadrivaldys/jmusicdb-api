@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs')
 const { body } = require('express-validator')
-const { User, Admin } = require('../models')
+const Admin = require('../models/admin')
+const User = require('../models/user')
 
 const validate =
 {
@@ -14,9 +15,9 @@ const validate =
                 .isLength({ min: 5, max: 20 }).withMessage('Minimum character length is 5 and maximum is 20.')
                 .custom(value =>
                 {
-                    return Admin
+                    return Admin.query()
                         .where('username', value)
-                        .fetch()
+                        .first()
                         .then(admin =>
                         {
                             if(admin) return Promise.reject('Username already in use.')
@@ -29,9 +30,9 @@ const validate =
                 .isEmail().withMessage('Invalid e-mail.')
                 .custom(value =>
                 {
-                    return Admin
+                    return Admin.query()
                         .where('email', value)
-                        .fetch()
+                        .first()
                         .then(admin =>
                         {
                             if(admin) return Promise.reject('E-mail already in use.')
@@ -57,28 +58,30 @@ const validate =
                 .isAlphanumeric().withMessage('Only letters and numbers are allowed.')
                 .custom(value =>
                 {
-                    return Admin
+                    return Admin.query()
                         .where('username', value)
-                        .fetch()
-                        .catch(error =>
+                        .first()
+                        .then(admin =>
                         {
-                            if(error) return Promise.reject('There is no account with that username.')
+                            if(!admin) return Promise.reject('There is no account with that username.')
                         })
                 }),
             body('password')
                 .not().isEmpty().withMessage('Password is required.')
                 .custom((value, { req }) =>
                 {
-                    return Admin
+                    return Admin.query()
                         .where('username', req.body.username)
-                        .fetch()
+                        .first()
                         .then(admin =>
                         {
-                            return bcrypt.compare(value, admin.toJSON({ hidden: [] }).password)
-                        })
-                        .then(result =>
-                        {
-                            if(!result) return Promise.reject('Incorrect password.')
+                            if(admin)
+                            {
+                                return bcrypt.compare(value, admin.password).then(result =>
+                                {
+                                    if(!result) return Promise.reject('Incorrect password.')
+                                })
+                            }
                         })
                 })
         ]
@@ -93,9 +96,9 @@ const validate =
                 .isLength({ min: 5, max: 20 }).withMessage('Minimum character length is 5 and maximum is 20.')
                 .custom(value =>
                 {
-                    return User
+                    return User.query()
                         .where('username', value)
-                        .fetch()
+                        .first()
                         .then(user =>
                         {
                             if(user) return Promise.reject('Username already in use.')
@@ -108,7 +111,7 @@ const validate =
                 .isEmail().withMessage('Invalid e-mail.')
                 .custom(value =>
                 {
-                    return User
+                    return User.query()
                         .where('email', value)
                         .first()
                         .then(user =>
@@ -135,29 +138,31 @@ const validate =
                 .not().isEmpty().withMessage('Username is required.')
                 .isAlphanumeric().withMessage('Only letters and numbers are allowed.')
                 .custom(value =>
-                {
-                    return User
+                {                     
+                    return User.query()
                         .where('username', value)
-                        .fetch()
-                        .catch(error =>
+                        .first()
+                        .then(user =>
                         {
-                            if(error) return Promise.reject('There is no account with that username.')
+                            if(!user) return Promise.reject('There is no account with that username.')
                         })
                 }),
             body('password')
                 .not().isEmpty().withMessage('Password is required.')
                 .custom((value, { req }) =>
                 {
-                    return User
+                    return User.query()
                         .where('username', req.body.username)
-                        .fetch()
+                        .first()
                         .then(user =>
                         {
-                            return bcrypt.compare(value, user.toJSON().password)
-                        })
-                        .then(result =>
-                        {
-                            if(!result) return Promise.reject('Incorrect password.')
+                            if(user)
+                            {
+                                return bcrypt.compare(value, user.password).then(result =>
+                                {
+                                    if(!result) return Promise.reject('Incorrect password.')
+                                })
+                            }
                         })
                 })
         ]

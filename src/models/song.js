@@ -1,52 +1,43 @@
-const table = require('../../config/tables')
-const database = require('../../config/database')
 
-const Song = database.model('Song', {
-    tableName: table.songs,
-    visible: [
-        'id',
-        'title',
-        'track_no',
-        'release_date',
-        'duration',
-        'slug',
-        'created_at',
-        'updated_at',
-        'catalog.id',
-        'catalog.title',
-        'catalog.type.name',
-        'catalog.slug',
-        'author.fullname'
-    ],
-    author()
+const { Model } = require('objection')
+const knex = require('../../config/database')
+const Admin = require('./admin')
+const Catalog = require('./catalog')
+
+Model.knex(knex)
+
+class Song extends Model
+{
+    static get tableName()
     {
-        return this.belongsTo(Admin, 'author_id', 'uuid')
-    },
-    catalog()
-    {
-        return this.belongsTo(Catalog, 'catalog_id')
+        return 'tbl_songs'
     }
-})
-
-const Admin = database.model('Admins', {
-    tableName: table.admin_accounts,
-    hidden: ['password', 'account_type_id']
-})
-
-const Catalog = database.model('Catalogs', {
-    tableName: table.catalogs,
-    author()
+  
+    static get relationMappings()
     {
-        return this.belongsTo(Admin, 'author_id', 'uuid')
-    },
-    type()
-    {
-        return this.belongsTo(CatalogType, 'catalog_type_id')
+        return {
+            catalog:
+            {
+                relation: Model.BelongsToOneRelation,
+                modelClass: Catalog,
+                join:
+                {
+                    from: 'tbl_songs.catalog_id',
+                    to: 'tbl_catalogs.id'
+                }
+            },
+            author:
+            {
+                relation: Model.BelongsToOneRelation,
+                modelClass: Admin,
+                join:
+                {
+                    from: 'tbl_songs.author_id',
+                    to: 'tbl_admin_accounts.uuid'
+                }
+            }
+        }
     }
-})
-
-const CatalogType = database.model('CatalogTypes', {
-    tableName: table.catalog_types
-})
+}
 
 module.exports = Song

@@ -1,11 +1,11 @@
 const router   = require('express').Router()
-const validate = require('../middleware/validate-input')
-const auth     = require('../controllers/auth')
+const validate = require('../middlewares/validate-input')
+const { admin: authAdmin, user: authUser } = require('../controllers/auth')
 
-router.post('/auth/admin/login', validate.admin.login, auth.admin.login)
-router.post('/auth/admin/logout', auth.admin.logout)
-router.post('/auth/register', validate.auth.register, auth.user.register)
-router.post('/auth/login', validate.auth.login, auth.user.login)
-router.post('/auth/logout', auth.user.logout)
+router.post('/auth/admin/login', validate.admin.login, authAdmin.login)
+router.post('/auth/admin/logout', authAdmin.logout)
+router.post('/auth/register', validate.auth.register, authUser.register)
+router.post('/auth/login', validate.auth.login, authUser.login)
+router.post('/auth/logout', authUser.logout)
 
 module.exports = router

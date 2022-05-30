@@ -1,37 +1,43 @@
-const table = require('../../config/tables')
-const bookshelf = require('../../config/database')
-const Admin = require('./admin')
+
+const { Model } = require('objection')
+const knex = require('../../config/database')
+const Song = require('./song')
 const CatalogType = require('./catalog_type')
 
-const Catalog = bookshelf.model('Catalog', {
-    tableName: table.catalogs,
-    hidden: [
-        'catalog_type_id',
-        'artists_id',
-        'author_id',
-        'type.id',
-        'type.order',
-        'songs.track_no',
-        'songs.release_date',
-        'songs.created_at',
-        'songs.updated_at',
-        'author.uuid',
-        'author.username',
-        'author.email',
-        'author.photo',
-        'author.bio',
-        'author.socmed',
-        'author.created_at',
-        'author.updated_at'
-    ],
-    author()
+Model.knex(knex)
+
+class Catalog extends Model
+{
+    static get tableName()
     {
-        return this.belongsTo(Admin, 'author_id', 'uuid')
-    },
-    type()
-    {
-        return this.belongsTo(CatalogType, 'catalog_type_id')
+        return 'tbl_catalogs'
     }
-})
+  
+    static get relationMappings()
+    {
+        return {
+            songs:
+            {
+                relation: Model.HasManyRelation,
+                modelClass: Song,
+                join:
+                {
+                    from: 'tbl_songs.catalog_id',
+                    to: 'tbl_catalogs.id'
+                }
+            },
+            type:
+            {
+                relation: Model.BelongsToOneRelation,
+                modelClass: CatalogType,
+                join:
+                {
+                    from: 'tbl_catalogs.catalog_type_id',
+                    to: 'tbl_catalog_types.id'
+                }
+            }
+        }
+    }
+}
 
 module.exports = Catalog

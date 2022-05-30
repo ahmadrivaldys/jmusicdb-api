@@ -1,8 +1,15 @@
-const table = require('../../config/tables')
-const database = require('../../config/database')
 
-const CatalogType = database.model('CatalogType', {
-    tableName: table.catalog_types
-})
+const { Model } = require('objection')
+const knex = require('../../config/database')
+
+Model.knex(knex)
+
+class CatalogType extends Model
+{
+    static get tableName()
+    {
+        return 'tbl_catalog_types'
+    }
+}
 
 module.exports = CatalogType

@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const { validationResult } = require('express-validator')
 const { nanoid } = require('nanoid')
-const { Admin, Blacklist } = require('../../models')
+const Admin = require('../../models/admin')
 require('dotenv').config()
 
 const login = async (req, res) =>
@@ -10,42 +10,36 @@ const login = async (req, res) =>
 
     if(!errors.isEmpty())
     {
-        res.status(422).json({ errors: errors.mapped() })
+        return res.status(422).json({ errors: errors.mapped() })
     }
-    else
+    
+    try
     {
-        try
-        {
-            Admin
-                .where('username', req.body.username)
-                .fetch()
-                .then(admin =>
-                {
-                    return jwt.sign({
-                        uuid: admin.uuid,
-                        username: admin.username
-                    },
-                    process.env.JWT_SECRET_KEY,
-                    {
-                        expiresIn: '7d'
-                    })
-                })
-                .then(token =>
-                {
-                    res.status(200)
-                    res.json({
-                        statusCode: 200,
-                        statusMessage: 'OK',
-                        message: 'Log in successful.',
-                        token
-                    })
-                })
-        }
-        catch(error)
-        {
-            console.log(error)
-            res.status(422).json(error)
-        }
+        const getAccount = await Admin.query()
+            .where('username', req.body.username)
+            .first()
+
+        const generateToken = jwt.sign({
+                uuid: getAccount.uuid,
+                username: getAccount.username
+            },
+            process.env.JWT_SECRET_KEY,
+            {
+                expiresIn: '7d'
+            })
+
+        return res.status(200)
+            .json({
+                statusCode: 200,
+                statusMessage: 'OK',
+                message: 'Log in successful.',
+                token: generateToken
+            })
+    }
+    catch(error)
+    {
+        console.log(error)
+        return res.status(422).json(error)
     }
 }
 
@@ -60,7 +54,7 @@ const logout = async (req, res) =>
             return res.status(422).json({
                 statusCode: 422,
                 statusMessage: 'Unprocessable Entity',
-                message: 'Can\'t log out. You haven\'t logged in for this session yet'
+                message: 'Can\'t log out. You haven\'t logged in for this session yet.'
             })
         }
 

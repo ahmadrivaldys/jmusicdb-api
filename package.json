@@ -22,7 +22,6 @@
     {
         "bcryptjs": "^2.4.3",
         "body-parser": "^1.19.2",
-        "bookshelf": "^1.2.0",
         "dotenv": "^16.0.0",
         "express": "^4.17.2",
         "express-validator": "^6.14.0",
@@ -31,6 +30,7 @@
         "multer": "^1.4.4",
         "mysql": "^2.18.1",
         "nanoid": "^3.3.1",
+        "objection": "^3.0.1",
         "slugify": "^1.6.5",
         "uuid": "^8.3.2"
     },

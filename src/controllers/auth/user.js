@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { validationResult } = require('express-validator')
 const { v4: uuidv4 } = require('uuid')
-const { AccountType, Blacklist, User } = require('../../models')
+// const { AccountType, Blacklist, User } = require('../../models')
 require('dotenv').config()
 
 const register = async (req, res) =>
