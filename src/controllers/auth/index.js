@@ -6,8 +6,9 @@ const { validationResult } = require('express-validator')
 
 // Importing models
 const AccountType = require('../../models/account_type')
-const Admin = require('../../models/admin')
 const User = require('../../models/user')
+
+const getAccount = require('../../utils/get-account')
 
 const register = async (req, res, next) =>
 {
@@ -54,7 +55,7 @@ const register = async (req, res, next) =>
     }
 }
 
-const login = async (req, res) =>
+const login = async (req, res, next) =>
 {
     const errors = validationResult(req)
 
@@ -65,27 +66,11 @@ const login = async (req, res) =>
     
     try
     {
-        const getAccount = () =>
-        {
-            if(req.params.account_type === 'admin')
-            {
-                const getAdminAccount = await Admin.query()
-                    .where('username', req.body.username)
-                    .first()
-                
-                return getAdminAccount
-            }
-            
-            const getUserAccount = await User.query()
-                .where('username', req.body.username)
-                .first()
-
-            return getUserAccount
-        }
+        const account = await getAccount(req.query.account_type, { username: req.body.username })
 
         const generateToken = jwt.sign({
-                uuid: getAccount.uuid,
-                username: getAccount.username
+                uuid: account.uuid,
+                username: account.username
             },
             process.env.JWT_SECRET_KEY,
             {

@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs')
 const { body } = require('express-validator')
 const Admin = require('../models/admin')
-const User = require('../models/user')
+const getAccount = require('../utils/get-account')
 
 const validate =
 {
@@ -50,40 +50,6 @@ const validate =
                 
                     return true
                 }),
-        ],
-        login:
-        [
-            body('username')
-                .not().isEmpty().withMessage('Username is required.')
-                .isAlphanumeric().withMessage('Only letters and numbers are allowed.')
-                .custom(value =>
-                {
-                    return Admin.query()
-                        .where('username', value)
-                        .first()
-                        .then(admin =>
-                        {
-                            if(!admin) return Promise.reject('There is no account with that username.')
-                        })
-                }),
-            body('password')
-                .not().isEmpty().withMessage('Password is required.')
-                .custom((value, { req }) =>
-                {
-                    return Admin.query()
-                        .where('username', req.body.username)
-                        .first()
-                        .then(admin =>
-                        {
-                            if(admin)
-                            {
-                                return bcrypt.compare(value, admin.password).then(result =>
-                                {
-                                    if(!result) return Promise.reject('Incorrect password.')
-                                })
-                            }
-                        })
-                })
         ]
     },
     auth:
@@ -94,30 +60,22 @@ const validate =
                 .not().isEmpty().withMessage('Username is required.')
                 .isAlphanumeric().withMessage('Only letters and numbers are allowed.')
                 .isLength({ min: 5, max: 20 }).withMessage('Minimum character length is 5 and maximum is 20.')
-                .custom(value =>
+                .custom(async username =>
                 {
-                    return User.query()
-                        .where('username', value)
-                        .first()
-                        .then(user =>
-                        {
-                            if(user) return Promise.reject('Username already in use.')
-                        })
+                    const account = await getAccount(null, { username })
+                    if(account) return Promise.reject('Username already in use.')
                 }),
             body('fullname')
-                .isAlpha('en-US', { ignore: '\s' }).isLength({ min: 5, max: 50 }).withMessage('Minimum character length is 5 and maximum is 50.'),
+                .not().isEmpty().withMessage('Fullname is required.')
+                .isAlpha('en-US', { ignore: '\s' }).withMessage('Only letters are allowed.')
+                .isLength({ min: 5, max: 50 }).withMessage('Minimum character length is 5 and maximum is 50.'),
             body('email')
                 .not().isEmpty().withMessage('E-mail is required.')
                 .isEmail().withMessage('Invalid e-mail.')
-                .custom(value =>
+                .custom(async email =>
                 {
-                    return User.query()
-                        .where('email', value)
-                        .first()
-                        .then(user =>
-                        {
-                            if(user) return Promise.reject('E-mail already in use.')
-                        })
+                    const account = await getAccount(null, { email })
+                    if(account) return Promise.reject('E-mail already in use.')
                 }),
             body('password')
                 .not().isEmpty().withMessage('Password is required.')
@@ -125,45 +83,32 @@ const validate =
             body('password_confirmation')
                 .not().isEmpty().withMessage('Password confirmation is required.')
                 .isLength({ min: 8, max: 25 }).withMessage('Minimum character length is 8 and maximum is 25.')
-                .custom((value, { req }) =>
+                .custom(async (password_confirmation, { req }) =>
                 {
-                    if(value !== req.body.password) throw new Error('Password confirmation does not match password.')
-                
-                    return true
-                }),
+                    if(password_confirmation !== req.body.password) return Promise.reject('Password confirmation does not match password.')
+                })
         ],
         login:
         [
             body('username')
                 .not().isEmpty().withMessage('Username is required.')
                 .isAlphanumeric().withMessage('Only letters and numbers are allowed.')
-                .custom(value =>
-                {                     
-                    return User.query()
-                        .where('username', value)
-                        .first()
-                        .then(user =>
-                        {
-                            if(!user) return Promise.reject('There is no account with that username.')
-                        })
+                .custom(async (username, { req }) =>
+                {
+                    const account = await getAccount(req.query.account_type, { username })
+                    if(!account) return Promise.reject('There is no account with that username.')
                 }),
             body('password')
                 .not().isEmpty().withMessage('Password is required.')
-                .custom((value, { req }) =>
+                .custom(async (password, { req }) =>
                 {
-                    return User.query()
-                        .where('username', req.body.username)
-                        .first()
-                        .then(user =>
-                        {
-                            if(user)
-                            {
-                                return bcrypt.compare(value, user.password).then(result =>
-                                {
-                                    if(!result) return Promise.reject('Incorrect password.')
-                                })
-                            }
-                        })
+                    const account = await getAccount(req.query.account_type, { username: req.body.username })
+                    
+                    if(account)
+                    {
+                        const comparePassword = await bcrypt.compare(password, account.password)
+                        if(!comparePassword) return Promise.reject('Incorrect password.')
+                    }
                 })
         ]
     },
