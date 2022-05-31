@@ -1,4 +1,4 @@
-
+const tables = require('../../config/tables')
 const Model = require('./init-model')
 const Song = require('./song')
 const CatalogType = require('./catalog_type')
@@ -7,7 +7,7 @@ class Catalog extends Model
 {
     static get tableName()
     {
-        return 'tbl_catalogs'
+        return tables.catalogs
     }
   
     static get relationMappings()
@@ -19,8 +19,8 @@ class Catalog extends Model
                 modelClass: Song,
                 join:
                 {
-                    from: 'tbl_songs.catalog_id',
-                    to: 'tbl_catalogs.id'
+                    from: `${tables.songs}.catalog_id`,
+                    to: `${tables.catalogs}.id`
                 }
             },
             type:
@@ -29,8 +29,8 @@ class Catalog extends Model
                 modelClass: CatalogType,
                 join:
                 {
-                    from: 'tbl_catalogs.catalog_type_id',
-                    to: 'tbl_catalog_types.id'
+                    from: `${tables.catalogs}.catalog_type_id`,
+                    to: `${tables.catalog_types}.id`
                 }
             }
         }

@@ -1,10 +1,11 @@
+const tables = require('../../config/tables')
 const Model = require('./init-model')
 
 class AccountType extends Model
 {
     static get tableName()
     {
-        return 'tbl_account_types'
+        return tables.account_types
     }
 }
 

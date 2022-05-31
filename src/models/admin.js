@@ -1,10 +1,11 @@
+const tables = require('../../config/tables')
 const Model = require('./init-model')
 
 class Admin extends Model
 {
     static get tableName()
     {
-        return 'tbl_admin_accounts'
+        return tables.admin_accounts
     }
 }
 

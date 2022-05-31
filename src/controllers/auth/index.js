@@ -1,11 +1,13 @@
 // Importing modules
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const { nanoid } = require('nanoid')
 const { v4: uuidv4 } = require('uuid')
 const { validationResult } = require('express-validator')
 
 // Importing models
 const AccountType = require('../../models/account_type')
+const BlacklistedToken = require('../../models/blacklisted_token')
 const User = require('../../models/user')
 
 const getAccount = require('../../utils/get-account')
@@ -80,7 +82,7 @@ const login = async (req, res, next) =>
         return res.status(200)
             .json({
                 statusCode: 200,
-                statusMessage: 'OK',
+                statusText: 'OK',
                 message: 'Log in successful.',
                 token: generateToken
             })
@@ -92,9 +94,61 @@ const login = async (req, res, next) =>
     }
 }
 
-const logout = (req, res, next) =>
+const logout = async (req, res, next) =>
 {
-    // 
+    try
+    {
+        const { authorization } = req.headers
+
+        if(!authorization)
+        {
+            const error = new Error('Can\'t log out. You haven\'t logged in for this session yet')
+            error.statusCode = 401
+            throw error
+        }
+
+        const authSplit = authorization.split(' ')
+        const [ authType, authToken ] = [ authSplit[0], authSplit[1] ]
+
+        if(authType !== 'Bearer')
+        {
+            const error = new Error('Invalid authorization type. Only Bearer authentication is allowed.')
+            error.statusCode = 401
+            throw error
+        }
+
+        const checkToken = await BlacklistedToken.query()
+            .where('token', authToken)
+            .first()
+
+        if(checkToken)
+        {
+            const error = new Error('You\'ve logged out before. No need to log out again.')
+            error.statusCode = 401
+            throw error
+        }
+
+        const blacklistToken = await BlacklistedToken.query()
+            .insert({ id: nanoid(8), token: authToken })
+
+        if(!blacklistToken)
+        {
+            const error = new Error('Log out failed.')
+            throw error
+        }
+
+        return res.status(200)
+            .json({
+                statusCode: 200,
+                statusText: 'OK',
+                message: 'Log out successful.'
+            })
+    }
+    catch(error)
+    {
+        console.log(error)
+        next(error)
+    }
 }
 
 module.exports = { register, login, logout }
