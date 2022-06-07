@@ -11,6 +11,7 @@ const BlacklistedToken = require('../../models/blacklisted_token')
 const User = require('../../models/user')
 
 const getAccount = require('../../utils/get-account')
+const tokenVerification = require('../../middlewares/token-verification')
 
 const register = async (req, res, next) =>
 {
@@ -29,7 +30,7 @@ const register = async (req, res, next) =>
         const salt = bcrypt.genSaltSync(10)
         const passwordHash = bcrypt.hashSync(password, salt)
         const accountType = await AccountType.query()
-            .where({ category: 'User', category_order: 3 })
+            .where({ category: 'user', category_order: 3 })
             .select('id')
             .first()
 
@@ -104,35 +105,7 @@ const logout = async (req, res, next) =>
 {
     try
     {
-        const { authorization } = req.headers
-
-        if(!authorization)
-        {
-            const error = new Error('Can\'t log out. You haven\'t logged in for this session yet')
-            error.statusCode = 401
-            throw error
-        }
-
-        const authSplit = authorization.split(' ')
-        const [ authType, authToken ] = [ authSplit[0], authSplit[1] ]
-
-        if(authType !== 'Bearer')
-        {
-            const error = new Error('Invalid authorization type. Only Bearer authentication is allowed.')
-            error.statusCode = 401
-            throw error
-        }
-
-        const checkToken = await BlacklistedToken.query()
-            .where('token', authToken)
-            .first()
-
-        if(checkToken)
-        {
-            const error = new Error('You\'ve logged out before. No need to log out again.')
-            error.statusCode = 401
-            throw error
-        }
+        await tokenVerification(req.headers, 'logout')
 
         const blacklistToken = await BlacklistedToken.query()
             .insert({ id: nanoid(8), token: authToken })

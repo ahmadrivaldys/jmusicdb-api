@@ -9,11 +9,11 @@ exports.seed = function(knex)
         // Data
         data =
         [
-            { id: nanoid(8), name: 'Administrator', category: 'Admin', category_order: 1 },
-            { id: nanoid(8), name: 'Editor', category: 'Admin', category_order: 2 },
-            { id: nanoid(8), name: 'Artist', category: 'User', category_order: 1 },
-            { id: nanoid(8), name: 'Subscriber', category: 'User', category_order: 2 },
-            { id: nanoid(8), name: 'User', category: 'User', category_order: 3 }
+            { id: nanoid(8), name: 'Administrator', category: 'admin', category_order: 1 },
+            { id: nanoid(8), name: 'Editor', category: 'admin', category_order: 2 },
+            { id: nanoid(8), name: 'Artist', category: 'user', category_order: 1 },
+            { id: nanoid(8), name: 'Subscriber', category: 'user', category_order: 2 },
+            { id: nanoid(8), name: 'User', category: 'user', category_order: 3 }
         ]
 
         // Insert seed entries

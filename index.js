@@ -1,9 +1,9 @@
-const express    = require('express')
-const app        = express()
+const express = require('express')
+const app = express()
 const bodyParser = require('body-parser')
-const multer     = require('multer')
-const path       = require('path')
-const routes     = require('./src/routes')
+const multer = require('multer')
+const path = require('path')
+const routes = require('./src/routes')
 const errorHandler = require('./src/middlewares/error-handler')
 
 const fileStorage = multer.diskStorage({

@@ -29,7 +29,7 @@ const store = async (req, res, next) =>
         const salt = bcrypt.genSaltSync(10)
         const passwordHash = bcrypt.hashSync(password, salt)
         const accountType = await AccountType.query()
-            .where({ id: account_type_id, category: 'Admin' })
+            .where({ id: account_type_id, category: 'admin' })
             .whereNot('category_order', 1)
             .select('id')
             .first()
