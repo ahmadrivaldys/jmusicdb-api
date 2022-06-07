@@ -23,17 +23,17 @@ const register = async (req, res, next) =>
     
     try
     {
-        const { username, fullname, email, password, account_type_code } = req.body
+        const { username, fullname, email, password } = req.body
         const uuid = uuidv4()
 
         const salt = bcrypt.genSaltSync(10)
         const passwordHash = bcrypt.hashSync(password, salt)
         const accountType = await AccountType.query()
-            .where('code', account_type_code)
+            .where({ category: 'User', category_order: 3 })
             .select('id')
             .first()
 
-        await User.query()
+        const createAccount = await User.query()
             .insert({
                 uuid,
                 username,
@@ -42,6 +42,12 @@ const register = async (req, res, next) =>
                 password: passwordHash,
                 account_type_id: accountType.id
             })
+
+        if(!createAccount)
+        {
+            const error = new Error('Failed to register account.')
+            throw error
+        }
 
         return res.status(201)
             .json({

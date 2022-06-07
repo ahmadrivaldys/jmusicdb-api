@@ -23,17 +23,18 @@ const store = async (req, res, next) =>
     
     try
     {
-        const { username, fullname, email, password, account_type_code } = req.body
+        const { username, fullname, email, password, account_type_id } = req.body
         const uuid = uuidv4()
 
         const salt = bcrypt.genSaltSync(10)
         const passwordHash = bcrypt.hashSync(password, salt)
         const accountType = await AccountType.query()
-            .where('code', account_type_code)
+            .where({ id: account_type_id, category: 'Admin' })
+            .whereNot('category_order', 1)
             .select('id')
             .first()
 
-        await Admin.query()
+        const createAdmin = await Admin.query()
             .insert({
                 uuid,
                 username,
@@ -42,6 +43,12 @@ const store = async (req, res, next) =>
                 password: passwordHash,
                 account_type_id: accountType.id
             })
+
+        if(!createAdmin)
+        {
+            const error = new Error('Failed to create admin account.')
+            throw error
+        }
 
         return res.status(201)
             .json({

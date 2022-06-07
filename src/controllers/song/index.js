@@ -11,7 +11,7 @@ const index = async (req, res, next) =>
         const currentPage = req.query.page || 1
         const perPage = req.query.perPage || 5
         
-        const songs = await Song.query()
+        const getAllSongs = await Song.query()
             .select('id', 'title', 'track_no', 'release_date', 'duration', 'slug', 'created_at', 'updated_at')
             .withGraphFetched('[catalog(selectCatalog).type(selectCatalogType), author(selectAuthor)]')
             .modifiers({
@@ -20,7 +20,7 @@ const index = async (req, res, next) =>
                 selectAuthor: builder => builder.select('fullname')
             })
 
-        if(!songs)
+        if(!getAllSongs)
         {
             const error = new Error('Song data not found.')
             error.statusCode = 404
@@ -59,7 +59,7 @@ const store = async (req, res, next) =>
         const { title, track_no, catalog_id, artists_id, release_date, duration } = req.body
         const id = nanoid()
 
-        await Song.query()
+        const createSong = await Song.query()
             .insert({
                 id,
                 title,
@@ -71,6 +71,12 @@ const store = async (req, res, next) =>
                 slug: slugify(title, { lower: true }),
                 author_id: req.uuid
             })
+
+        if(!createSong)
+        {
+            const error = new Error('Failed to create song data.')
+            throw error
+        }
                                         
         return res.status(201)
             .json({
@@ -90,7 +96,7 @@ const show = async (req, res, next) =>
 {
     try
     {
-        const song = await Song.query()
+        const getSong = await Song.query()
             .where('id', req.params.id)
             .select('id', 'title', 'track_no', 'release_date', 'duration', 'slug', 'created_at', 'updated_at')
             .withGraphFetched('[catalog(selectCatalog).type(selectCatalogType), author(selectAuthor)]')
@@ -101,7 +107,7 @@ const show = async (req, res, next) =>
             })
             .first()
 
-        if(!song)
+        if(!getSong)
         {
             const error = new Error('Song data not found.')
             error.statusCode = 404
@@ -113,7 +119,7 @@ const show = async (req, res, next) =>
                 statusCode: 200,
                 statusText: 'OK',
                 message: 'Successfully fetched song data.',
-                song
+                song: getSong
             })
     }
     catch(error)
@@ -136,7 +142,7 @@ const update = async (req, res, next) =>
     {
         const { title, track_no, catalog_id, artists_id, release_date, duration } = req.body
 
-        const updated = await Song.query()
+        const updateSong = await Song.query()
             .where('id', req.params.id)
             .update({
                 title,
@@ -149,9 +155,9 @@ const update = async (req, res, next) =>
                 updated_at: knex.fn.now()
             })
 
-        if(!updated)
+        if(!updateSong)
         {
-            const error = new Error('Update failed: Song data not found.')
+            const error = new Error('Failed to update song data.')
             error.statusCode = 404
             throw error
         }
@@ -174,13 +180,13 @@ const destroy = async (req, res, next) =>
 {
     try
     {
-        const deleted = await Song.query()
+        const deleteSong = await Song.query()
             .where('id', req.params.id)
             .del()
 
-        if(!deleted)
+        if(!deleteSong)
         {
-            const error = new Error('Delete failed: Song data not found.')
+            const error = new Error('Failed to delete song data.')
             error.statusCode = 404
             throw error
         }

@@ -14,7 +14,7 @@ exports.seed = function(knex)
                 fullname: 'Dev Administrator',
                 email: 'dev.admin@email.com',
                 password: '$2a$10$lsY6IZM.jh5NCPBJUwUsI.hdGYao1ah79103o1r1yO44ly4P/GxaG',
-                account_type_id: 1
+                account_type_id: 'AKuI49Si'
             }
         ]
 

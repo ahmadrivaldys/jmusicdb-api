@@ -1,14 +1,6 @@
 const index = async (req, res) =>
 {
-    try
-    {
-        //
-    }
-    catch(error)
-    {
-        console.log(error)
-        res.status(422).json(error)
-    }
+    // 
 }
 
 const store = async (req, res) =>
