@@ -15,12 +15,23 @@ const errorHandler = (error, req, res, next) =>
         statusText = 'Unauthorized'
     }
 
-    return res.status(statusCode)
-        .json({
+    let responsesData = {
+        statusCode,
+        statusText,
+        message: error.message
+    }
+
+    if(error.errors)
+    {
+        responsesData = {
             statusCode,
             statusText,
-            message: error.message
-        })
+            message: error.message,
+            errors: error.errors
+        }
+    }
+
+    return res.status(statusCode).json(responsesData)
 }
 
 module.exports = errorHandler

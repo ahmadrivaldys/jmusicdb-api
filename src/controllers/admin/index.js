@@ -18,7 +18,9 @@ const store = async (req, res, next) =>
 
     if(!errors.isEmpty())
     {
-        return res.status(422).json({ errors: errors.mapped() })
+        const error = new Error('Input error.')
+        error.errors = errors.mapped()
+        throw error
     }
     
     try

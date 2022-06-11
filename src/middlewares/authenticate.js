@@ -1,4 +1,4 @@
-const tokenVerification = require('./token-verification')
+const verifyToken = require('./verify-token')
 const AccountType = require('../models/account_type')
 const Admin = require('../models/admin')
 
@@ -6,7 +6,7 @@ const admin = async (req, res, next) =>
 {
     try
     {
-        const decoded = await tokenVerification(req.headers)
+        const decoded = await verifyToken(req.headers)
 
         const accountType = await AccountType.query()
             .where({ category: 'admin', category_order: 1 })
@@ -41,4 +41,19 @@ const admin = async (req, res, next) =>
     }
 }
 
-module.exports = { admin }
+const verifyBeforeLogout = async (req, res, next) =>
+{
+    try
+    {
+        req.verified_token = await verifyToken(req.headers, 'logout')
+
+        next()
+    }
+    catch(error)
+    {
+        console.log('Error:', error.message)
+        next(error)
+    }
+}
+
+module.exports = { admin, verifyBeforeLogout }

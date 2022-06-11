@@ -2,13 +2,13 @@ const jwt = require('jsonwebtoken')
 const BlacklistedToken = require('../models/blacklisted_token')
 
 /**
- * Token Verification
+ * Verify Token
  * 
  * @param {*} headers 
- * @param {string} tokenVerifyFor 
- * @returns verified token
+ * @param {string} verifyTokenFor 
+ * @returns decoded or verified token
  */
-const tokenVerification = async (headers, tokenVerifyFor) =>
+const verifyToken = async (headers, verifyTokenFor) =>
 {
     const { authorization } = headers
 
@@ -16,7 +16,7 @@ const tokenVerification = async (headers, tokenVerifyFor) =>
     if(!authorization)
     {
         let resMessage = 'Authentication is needed. Please log in.'
-        if(tokenVerifyFor === 'logout') resMessage = 'Can\'t log out. You haven\'t logged in for this session yet.'
+        if(verifyTokenFor === 'logout') resMessage = 'Can\'t log out. You haven\'t logged in for this session yet.'
 
         const error = new Error(resMessage)
         error.statusCode = 401
@@ -42,7 +42,7 @@ const tokenVerification = async (headers, tokenVerifyFor) =>
     if(checkToken)
     {
         let resMessage = 'Invalid token. Please log in again.'
-        if(tokenVerifyFor === 'logout') resMessage = 'You\'ve logged out before. No need to log out again.'
+        if(verifyTokenFor === 'logout') resMessage = 'You\'ve logged out before. No need to log out again.'
 
         const error = new Error(resMessage)
         error.statusCode = 401
@@ -50,14 +50,14 @@ const tokenVerification = async (headers, tokenVerifyFor) =>
     }
 
     // JWT Verify
-    const verifyToken = jwt.verify(authToken, process.env.JWT_SECRET_KEY, (err, decoded) =>
+    const getDecodedToken = jwt.verify(authToken, process.env.JWT_SECRET_KEY, (err, decoded) =>
     {
         if(err)
         {
             if(err.name === 'TokenExpiredError')
             {
                 let resMessage = 'Invalid token: token has expired. Please log in again.'
-                if(tokenVerifyFor === 'logout') resMessage = 'Can\'t log out. Invalid token: token has expired.'
+                if(verifyTokenFor === 'logout') resMessage = 'Can\'t log out. Invalid token: token has expired.'
 
                 const error = new Error(resMessage)
                 error.statusCode = 401
@@ -73,7 +73,9 @@ const tokenVerification = async (headers, tokenVerifyFor) =>
         return decoded
     })
 
-    return verifyToken
+    if(verifyTokenFor === 'logout') return authToken
+
+    return getDecodedToken
 }
 
-module.exports = tokenVerification
+module.exports = verifyToken

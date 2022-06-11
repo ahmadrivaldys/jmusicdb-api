@@ -11,7 +11,6 @@ const BlacklistedToken = require('../../models/blacklisted_token')
 const User = require('../../models/user')
 
 const getAccount = require('../../utils/get-account')
-const tokenVerification = require('../../middlewares/token-verification')
 
 const register = async (req, res, next) =>
 {
@@ -19,7 +18,9 @@ const register = async (req, res, next) =>
 
     if(!errors.isEmpty())
     {
-        return res.status(422).json({ errors: errors.mapped() })
+        const error = new Error('Input error.')
+        error.errors = errors.mapped()
+        throw error
     }
     
     try
@@ -70,7 +71,10 @@ const login = async (req, res, next) =>
 
     if(!errors.isEmpty())
     {
-        return res.status(422).json({ errors: errors.mapped() })
+        // return res.status(422).json({ errors: errors.mapped() })
+        const error = new Error('Input error.')
+        error.errors = errors.mapped()
+        throw error
     }
     
     try
@@ -105,10 +109,8 @@ const logout = async (req, res, next) =>
 {
     try
     {
-        await tokenVerification(req.headers, 'logout')
-
         const blacklistToken = await BlacklistedToken.query()
-            .insert({ id: nanoid(8), token: authToken })
+            .insert({ id: nanoid(8), token: req.verified_token })
 
         if(!blacklistToken)
         {

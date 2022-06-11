@@ -1,7 +1,7 @@
-const router   = require('express').Router()
-const isAuth   = require('../middlewares/authenticate')
+const router = require('express').Router()
+const isAuth = require('../middlewares/authenticate')
 const validate = require('../middlewares/validate-input')
-const song     = require('../controllers/song')
+const song = require('../controllers/song')
 
 router.get('/songs', song.index)
 router.post('/song', [isAuth.admin, validate.song.store], song.store)
