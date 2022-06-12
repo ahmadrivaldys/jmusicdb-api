@@ -1,3 +1,5 @@
+require('dotenv').config({ path: '../.env' })
+
 module.exports =
 {
     development:
@@ -8,15 +10,15 @@ module.exports =
             host: process.env.DB_HOST,
             user: process.env.DB_USERNAME,
             password: process.env.DB_PASSWORD,
-            database: process.env.DB_DATABASE
+            database: process.env.DB_NAME
         },
         migrations:
         {
-            directory: './database/migrations'
+            directory: '../database/migrations'
         },
         seeds:
         {
-            directory: './database/seeders/dev'
+            directory: '../database/seeders/dev'
         }
     },
     production:
@@ -27,15 +29,15 @@ module.exports =
             host: process.env.DB_HOST,
             user: process.env.DB_USERNAME,
             password: process.env.DB_PASSWORD,
-            database: process.env.DB_DATABASE
+            database: process.env.DB_NAME
         },
         migrations:
         {
-            directory: './database/migrations'
+            directory: '../database/migrations'
         },
         seeds:
         {
-            directory: './database/seeders'
+            directory: '../database/seeders'
         }
     }
 }

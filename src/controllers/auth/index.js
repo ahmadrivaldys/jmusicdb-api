@@ -10,21 +10,21 @@ const AccountType = require('../../models/account_type')
 const BlacklistedToken = require('../../models/blacklisted_token')
 const User = require('../../models/user')
 
-const getAccount = require('../../utils/get-account')
+const { getAccount } = require('../../utils')
 
 const register = async (req, res, next) =>
 {
-    const errors = validationResult(req)
-
-    if(!errors.isEmpty())
-    {
-        const error = new Error('Input error.')
-        error.errors = errors.mapped()
-        throw error
-    }
-    
     try
     {
+        const errors = validationResult(req)
+
+        if(!errors.isEmpty())
+        {
+            const error = new Error('Input error.')
+            error.errors = errors.mapped()
+            throw error
+        }
+
         const { username, fullname, email, password } = req.body
         const uuid = uuidv4()
 
@@ -67,18 +67,17 @@ const register = async (req, res, next) =>
 
 const login = async (req, res, next) =>
 {
-    const errors = validationResult(req)
-
-    if(!errors.isEmpty())
-    {
-        // return res.status(422).json({ errors: errors.mapped() })
-        const error = new Error('Input error.')
-        error.errors = errors.mapped()
-        throw error
-    }
-    
     try
     {
+        const errors = validationResult(req)
+
+        if(!errors.isEmpty())
+        {
+            const error = new Error('Input error.')
+            error.errors = errors.mapped()
+            throw error
+        }
+
         const account = await getAccount(req.query.account_type, { username: req.body.username })
 
         const generateToken = jwt.sign({

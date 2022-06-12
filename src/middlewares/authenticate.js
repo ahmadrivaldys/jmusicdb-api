@@ -25,7 +25,7 @@ const admin = async (req, res, next) =>
         if(!checkAccount)
         {
             const error = new Error('Only admin is allowed.')
-            error.statusCode = 401
+            error.statusCode = 403
             throw error
         }
 

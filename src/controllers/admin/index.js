@@ -14,17 +14,17 @@ const index = async (req, res) =>
 
 const store = async (req, res, next) =>
 {
-    const errors = validationResult(req)
-
-    if(!errors.isEmpty())
-    {
-        const error = new Error('Input error.')
-        error.errors = errors.mapped()
-        throw error
-    }
-    
     try
     {
+        const errors = validationResult(req)
+
+        if(!errors.isEmpty())
+        {
+            const error = new Error('Input error.')
+            error.errors = errors.mapped()
+            throw error
+        }
+
         const { username, fullname, email, password, account_type_id } = req.body
         const uuid = uuidv4()
 

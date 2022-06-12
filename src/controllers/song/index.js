@@ -1,8 +1,8 @@
 const { validationResult } = require('express-validator')
 const { nanoid } = require('nanoid')
 const slugify = require('slugify')
-const knex = require('../../../config/database')
 const Song = require('../../models/song')
+const { getDBCurrentTime } = require('../../utils')
 
 const index = async (req, res, next) =>
 {
@@ -32,8 +32,8 @@ const index = async (req, res, next) =>
                 statusCode: 200,
                 statusText: 'OK',
                 message: 'Successfully fetched all song data.',
-                songs,
-                totalData: songs.length,
+                songs: getAllSongs,
+                totalData: getAllSongs.length,
                 perPage: parseInt(perPage),
                 currentPage: parseInt(currentPage)
             })
@@ -46,18 +46,18 @@ const index = async (req, res, next) =>
 }
 
 const store = async (req, res, next) =>
-{
-    const errors = validationResult(req)
-
-    if(!errors.isEmpty())
-    {
-        const error = new Error('Input error.')
-        error.errors = errors.mapped()
-        throw error
-    }
-    
+{   
     try
     {
+        const errors = validationResult(req)
+
+        if(!errors.isEmpty())
+        {
+            const error = new Error('Input error.')
+            error.errors = errors.mapped()
+            throw error
+        }
+
         const { title, track_no, catalog_id, artists_id, release_date, duration } = req.body
         const id = nanoid()
 
@@ -133,17 +133,17 @@ const show = async (req, res, next) =>
 
 const update = async (req, res, next) =>
 {
-    const errors = validationResult(req)
-
-    if(!errors.isEmpty())
-    {
-        const error = new Error('Input error.')
-        error.errors = errors.mapped()
-        throw error
-    }
-    
     try
     {
+        const errors = validationResult(req)
+
+        if(!errors.isEmpty())
+        {
+            const error = new Error('Input error.')
+            error.errors = errors.mapped()
+            throw error
+        }
+
         const { title, track_no, catalog_id, artists_id, release_date, duration } = req.body
 
         const updateSong = await Song.query()
@@ -156,7 +156,7 @@ const update = async (req, res, next) =>
                 release_date,
                 duration,
                 slug: slugify(title, { lower: true }),
-                updated_at: knex.fn.now()
+                updated_at: getDBCurrentTime()
             })
 
         if(!updateSong)

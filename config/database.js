@@ -1,14 +1,8 @@
 require('dotenv').config()
+const knex = require('knex')
+const knexfile = require('./knexfile')
 
-const knex = require('knex')({
-    client: process.env.DB_CLIENT,
-    connection:
-    {
-        host: process.env.DB_HOST,
-        user: process.env.DB_USERNAME,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_DATABASE
-    }
-})
+const config = process.env.NODE_ENV === 'production' ? knexfile.production : knexfile.development 
+const database = knex(config)
 
-module.exports = knex
+module.exports = database
