@@ -2,6 +2,7 @@
     "name": "jmusicdb-api",
     "version": "1.0.0",
     "description": "RESTful API to provide Japanese music/song data. Built with Express, Knex and MySQL.",
+    "private": true,
     "main": "index.js",
     "scripts":
     {

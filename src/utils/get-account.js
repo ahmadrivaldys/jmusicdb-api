@@ -7,6 +7,10 @@ const getAccount = async (account_type, conditions) =>
     {
         const getAdminAccount = await Admin.query()
             .where(conditions)
+            .withGraphFetched('[account_type(selectAccountType)]')
+            .modifiers({
+                selectAccountType: builder => builder.select('role')
+            })
             .first()
         
         return getAdminAccount
@@ -14,6 +18,10 @@ const getAccount = async (account_type, conditions) =>
 
     const getUserAccount = await User.query()
         .where(conditions)
+        .withGraphFetched('[account_type(selectAccountType)]')
+            .modifiers({
+                selectAccountType: builder => builder.select('role')
+            })
         .first()
 
     return getUserAccount

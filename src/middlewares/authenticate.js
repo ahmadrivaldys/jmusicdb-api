@@ -2,6 +2,24 @@ const verifyToken = require('./verify-token')
 const AccountType = require('../models/account_type')
 const Admin = require('../models/admin')
 
+const index = async (req, res, next) =>
+{
+    try
+    {
+        const decoded = await verifyToken(req.headers)
+
+        req.uuid = decoded.uuid
+        req.username = decoded.username
+
+        next()
+    }
+    catch(error)
+    {
+        console.log('Error:', error.message)
+        next(error)
+    }
+}
+
 const admin = async (req, res, next) =>
 {
     try
@@ -18,7 +36,7 @@ const admin = async (req, res, next) =>
             .select('username', 'fullname')
             .withGraphFetched('[account_type(selectAccountType)]')
             .modifiers({
-                selectAccountType: builder => builder.select('name as access_level')
+                selectAccountType: builder => builder.select('role')
             })
             .first()
 
@@ -41,6 +59,11 @@ const admin = async (req, res, next) =>
     }
 }
 
+const user = async (req, res, next) =>
+{
+    // 
+}
+
 const verifyBeforeLogout = async (req, res, next) =>
 {
     try
@@ -56,4 +79,4 @@ const verifyBeforeLogout = async (req, res, next) =>
     }
 }
 
-module.exports = { admin, verifyBeforeLogout }
+module.exports = { index, admin, verifyBeforeLogout }

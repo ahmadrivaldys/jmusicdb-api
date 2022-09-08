@@ -10,6 +10,7 @@ const AccountType = require('../../models/account_type')
 const BlacklistedToken = require('../../models/blacklisted_token')
 const User = require('../../models/user')
 
+// Importing utils/helpers
 const { getAccount } = require('../../utils')
 
 const register = async (req, res, next) =>
@@ -94,7 +95,13 @@ const login = async (req, res, next) =>
                 statusCode: 200,
                 statusText: 'OK',
                 message: 'Log in successful.',
-                token: generateToken
+                token: generateToken,
+                loggedInUser:
+                {
+                    fullname: account.fullname,
+                    photo: account.photo,
+                    role: account.account_type.role
+                }
             })
     }
     catch(error)

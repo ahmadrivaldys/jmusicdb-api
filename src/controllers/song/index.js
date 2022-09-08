@@ -1,7 +1,12 @@
+// Importing modules
 const { validationResult } = require('express-validator')
 const { nanoid } = require('nanoid')
 const slugify = require('slugify')
+
+// Importing models
 const Song = require('../../models/song')
+
+// Importing utils/helpers
 const { getDBCurrentTime } = require('../../utils')
 
 const index = async (req, res, next) =>
