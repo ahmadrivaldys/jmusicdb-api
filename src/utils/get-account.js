@@ -9,7 +9,7 @@ const getAccount = async (account_type, conditions) =>
             .where(conditions)
             .withGraphFetched('[account_type(selectAccountType)]')
             .modifiers({
-                selectAccountType: builder => builder.select('role')
+                selectAccountType: builder => builder.select('name')
             })
             .first()
         
@@ -20,7 +20,7 @@ const getAccount = async (account_type, conditions) =>
         .where(conditions)
         .withGraphFetched('[account_type(selectAccountType)]')
             .modifiers({
-                selectAccountType: builder => builder.select('role')
+                selectAccountType: builder => builder.select('name')
             })
         .first()
 

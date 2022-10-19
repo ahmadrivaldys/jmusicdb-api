@@ -36,7 +36,7 @@ const admin = async (req, res, next) =>
             .select('username', 'fullname')
             .withGraphFetched('[account_type(selectAccountType)]')
             .modifiers({
-                selectAccountType: builder => builder.select('role')
+                selectAccountType: builder => builder.select('name')
             })
             .first()
 

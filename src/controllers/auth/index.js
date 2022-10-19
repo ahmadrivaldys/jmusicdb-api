@@ -93,17 +93,18 @@ const login = async (req, res, next) =>
                 expiresIn: '7d'
             })
 
-        const fullname = cryptr.encrypt(account.fullname)
-        const photo = account.photo !== null ? cryptr.encrypt(account.photo) : account.photo
-        const role = cryptr.encrypt(account.account_type.role)
-
         return res.status(200)
             .json({
                 statusCode: 200,
                 statusText: 'OK',
                 message: 'Log in successful.',
                 token: generateToken,
-                loggedInUser: { fullname, photo, role }
+                loggedInUser:
+                {
+                    fullname: account.fullname,
+                    photo: account.photo,
+                    account_type: account.account_type.name
+                }
             })
     }
     catch(error)
