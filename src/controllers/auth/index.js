@@ -1,5 +1,6 @@
 // Importing modules
 const bcrypt = require('bcryptjs')
+const Cryptr = require('cryptr')
 const jwt = require('jsonwebtoken')
 const { nanoid } = require('nanoid')
 const { v4: uuidv4 } = require('uuid')
@@ -12,6 +13,8 @@ const User = require('../../models/user')
 
 // Importing utils/helpers
 const { getAccount } = require('../../utils')
+
+const cryptr = new Cryptr('loggedInUser-key-858')
 
 const register = async (req, res, next) =>
 {
@@ -90,18 +93,17 @@ const login = async (req, res, next) =>
                 expiresIn: '7d'
             })
 
+        const fullname = cryptr.encrypt(account.fullname)
+        const photo = account.photo !== null ? cryptr.encrypt(account.photo) : account.photo
+        const role = cryptr.encrypt(account.account_type.role)
+
         return res.status(200)
             .json({
                 statusCode: 200,
                 statusText: 'OK',
                 message: 'Log in successful.',
                 token: generateToken,
-                loggedInUser:
-                {
-                    fullname: account.fullname,
-                    photo: account.photo,
-                    role: account.account_type.role
-                }
+                loggedInUser: { fullname, photo, role }
             })
     }
     catch(error)
