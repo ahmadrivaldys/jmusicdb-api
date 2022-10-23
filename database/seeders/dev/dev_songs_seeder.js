@@ -15,7 +15,7 @@ exports.seed = function(knex)
                 title: 'Odoriko',
                 track_no: '01',
                 catalog_id: 'mzIq5afcEuITkbOngIo6-',
-                artists_id: 1,
+                release_date: '2022-10-23',
                 duration: '3:50',
                 slug: 'odoriko',
                 author_id
@@ -25,7 +25,7 @@ exports.seed = function(knex)
                 title: 'Tabiji',
                 track_no: '02',
                 catalog_id: 'RXZvJIn_SJ8kMIf2eNFjS',
-                artists_id: 2,
+                release_date: '2022-10-23',
                 duration: '4:37',
                 slug: 'tabiji',
                 author_id
@@ -35,7 +35,7 @@ exports.seed = function(knex)
                 title: 'Kirari',
                 track_no: '01',
                 catalog_id: 'tleDyUOMOfkVZzW8WCtC0',
-                artists_id: 2,
+                release_date: '2022-10-23',
                 duration: '3:51',
                 slug: 'kirari',
                 author_id

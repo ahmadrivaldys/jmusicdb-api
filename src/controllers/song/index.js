@@ -63,8 +63,9 @@ const store = async (req, res, next) =>
             throw error
         }
 
-        const { title, track_no, catalog_id, artists_id, release_date, duration } = req.body
+        const { title, track_no, catalog_id, release_date, minutes, seconds } = req.body
         const id = nanoid()
+        const duration = `${minutes < 10 ? '0' + minutes.toString() : minutes.toString()}:${seconds < 10 ? '0' + seconds.toString() : seconds.toString()}`
 
         const createSong = await Song.query()
             .insert({
@@ -72,7 +73,6 @@ const store = async (req, res, next) =>
                 title,
                 track_no,
                 catalog_id,
-                artists_id,
                 release_date,
                 duration,
                 slug: slugify(title, { lower: true }),
@@ -149,7 +149,8 @@ const update = async (req, res, next) =>
             throw error
         }
 
-        const { title, track_no, catalog_id, artists_id, release_date, duration } = req.body
+        const { title, track_no, catalog_id, release_date, minutes, seconds } = req.body
+        const duration = `${minutes < 10 ? '0' + minutes.toString() : minutes.toString()}:${seconds < 10 ? '0' + seconds.toString() : seconds.toString()}`
 
         const updateSong = await Song.query()
             .where('id', req.params.id)
@@ -157,7 +158,6 @@ const update = async (req, res, next) =>
                 title,
                 track_no,
                 catalog_id,
-                artists_id,
                 release_date,
                 duration,
                 slug: slugify(title, { lower: true }),

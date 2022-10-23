@@ -1,5 +1,5 @@
 const router  = require('express').Router()
-const admin   = require('./admin')
+const account = require('./account')
 // const album   = require('./album')
 const auth    = require('./auth')
 const catalog = require('./catalog')
@@ -12,7 +12,7 @@ router.get('/', (req, res) =>
     })
 })
 
-router.use(admin)
+router.use(account)
 // router.use(album)
 router.use(auth)
 router.use(catalog)

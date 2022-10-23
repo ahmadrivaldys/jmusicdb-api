@@ -1,55 +1,50 @@
 const bcrypt = require('bcryptjs')
 const { body } = require('express-validator')
-const Admin = require('../models/admin')
 const { getAccount } = require('../utils')
 
 const validate =
 {
-    admin:
+    account:
     {
-        store:
+        create_admin:
         [
             body('username')
                 .not().isEmpty().withMessage('Username is required.')
                 .isAlphanumeric().withMessage('Only letters and numbers are allowed.')
-                .isLength({ min: 5, max: 20 }).withMessage('Minimum character length is 5 and maximum is 20.')
-                .custom(value =>
+                .isLength({ min: 5 }).withMessage('Username must be at least 5 characters long.')
+                .isLength({ max: 20 }).withMessage('Maximum character length is 20.')
+                .custom(async username =>
                 {
-                    return Admin.query()
-                        .where('username', value)
-                        .first()
-                        .then(admin =>
-                        {
-                            if(admin) return Promise.reject('Username already in use.')
-                        })
+                    const account = await getAccount('admin', { username })
+                    if(account) return Promise.reject('Username already in use.')
                 }),
             body('fullname')
-                .isAlpha('en-US', { ignore: '\s' }).isLength({ min: 5, max: 50 }).withMessage('Minimum character length is 5 and maximum is 50.'),
+                .not().isEmpty().withMessage('Fullname is required.')
+                .isAlpha('en-US', { ignore: '\s' }).withMessage('Only letters are allowed.')
+                .isLength({ min: 5 }).withMessage('Fullname must be at least 5 characters long.')
+                .isLength({ max: 50 }).withMessage('Maximum character length is 50.'),
             body('email')
                 .not().isEmpty().withMessage('E-mail is required.')
                 .isEmail().withMessage('Invalid e-mail.')
-                .custom(value =>
+                .custom(async email =>
                 {
-                    return Admin.query()
-                        .where('email', value)
-                        .first()
-                        .then(admin =>
-                        {
-                            if(admin) return Promise.reject('E-mail already in use.')
-                        })
+                    const account = await getAccount('admin', { email })
+                    if(account) return Promise.reject('E-mail already in use.')
                 }),
             body('password')
                 .not().isEmpty().withMessage('Password is required.')
-                .isLength({ min: 8, max: 25 }).withMessage('Minimum character length is 8 and maximum is 25.'),
+                .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long.')
+                .isLength({ max: 25 }).withMessage('Maximum character length is 25.'),
             body('password_confirmation')
-                .not().isEmpty().withMessage('Password confirmation is required.')
-                .isLength({ min: 8, max: 25 }).withMessage('Minimum character length is 8 and maximum is 25.')
-                .custom((value, { req }) =>
+                .not().isEmpty().withMessage('Password Confirmation is required.')
+                .isLength({ min: 8 }).withMessage('Password Confirmation must be at least 8 characters long.')
+                .isLength({ max: 25 }).withMessage('Maximum character length is 25.')
+                .custom((password_confirmation, { req }) =>
                 {
-                    if(value !== req.body.password) throw new Error('Password confirmation does not match password.')
-                
-                    return true
+                    if(password_confirmation !== req.body.password) return Promise.reject('Password confirmation does not match password.')
                 }),
+            body('account_type_id')
+                .not().isEmpty().withMessage('Account Type is required.')
         ]
     },
     auth:
@@ -59,7 +54,8 @@ const validate =
             body('username')
                 .not().isEmpty().withMessage('Username is required.')
                 .isAlphanumeric().withMessage('Only letters and numbers are allowed.')
-                .isLength({ min: 5, max: 20 }).withMessage('Minimum character length is 5 and maximum is 20.')
+                .isLength({ min: 5 }).withMessage('Username must be at least 5 characters long.')
+                .isLength({ max: 20 }).withMessage('Maximum character length is 20.')
                 .custom(async username =>
                 {
                     const account = await getAccount(null, { username })
@@ -68,7 +64,8 @@ const validate =
             body('fullname')
                 .not().isEmpty().withMessage('Fullname is required.')
                 .isAlpha('en-US', { ignore: '\s' }).withMessage('Only letters are allowed.')
-                .isLength({ min: 5, max: 50 }).withMessage('Minimum character length is 5 and maximum is 50.'),
+                .isLength({ min: 5 }).withMessage('Fullname must be at least 5 characters long.')
+                .isLength({ max: 50 }).withMessage('Maximum character length is 50.'),
             body('email')
                 .not().isEmpty().withMessage('E-mail is required.')
                 .isEmail().withMessage('Invalid e-mail.')
@@ -79,11 +76,13 @@ const validate =
                 }),
             body('password')
                 .not().isEmpty().withMessage('Password is required.')
-                .isLength({ min: 8, max: 25 }).withMessage('Minimum character length is 8 and maximum is 25.'),
+                .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long.')
+                .isLength({ max: 25 }).withMessage('Maximum character length is 25.'),
             body('password_confirmation')
-                .not().isEmpty().withMessage('Password confirmation is required.')
-                .isLength({ min: 8, max: 25 }).withMessage('Minimum character length is 8 and maximum is 25.')
-                .custom(async (password_confirmation, { req }) =>
+                .not().isEmpty().withMessage('Password Confirmation is required.')
+                .isLength({ min: 8 }).withMessage('Password Confirmation must be at least 8 characters long.')
+                .isLength({ max: 25 }).withMessage('Maximum character length is 25.')
+                .custom((password_confirmation, { req }) =>
                 {
                     if(password_confirmation !== req.body.password) return Promise.reject('Password confirmation does not match password.')
                 })
@@ -92,7 +91,6 @@ const validate =
         [
             body('username')
                 .not().isEmpty().withMessage('Username is required.')
-                .isAlphanumeric().withMessage('Only letters and numbers are allowed.')
                 .custom(async (username, { req }) =>
                 {
                     const account = await getAccount(req.query.account_type, { username })
@@ -116,21 +114,39 @@ const validate =
     {
         store:
         [
-            body('title').not().isEmpty().withMessage('Title is required.'),
-            body('track_no').not().isEmpty().withMessage('Track No. is required.'),
-            body('catalog_id').not().isEmpty().withMessage('Catalog is required.'),
-            // body('artists_id').not().isEmpty().withMessage('Artist is required.'),
-            // body('release_date').not().isEmpty().withMessage('Release Date is required.'),
-            body('duration').not().isEmpty().withMessage('Duration is required.')
+            body('title')
+                .not().isEmpty().withMessage('Title is required.'),
+            body('track_no')
+                .not().isEmpty().withMessage('Track No. is required.')
+                .isNumeric().withMessage('Only numbers are allowed.'),
+            body('catalog_id')
+                .not().isEmpty().withMessage('Catalog is required.'),
+            body('release_date')
+                .not().isEmpty().withMessage('Release Date is required.'),
+            body('minutes')
+                .not().isEmpty().withMessage('Minutes is required.')
+                .isNumeric().withMessage('Only numbers are allowed.'),
+            body('seconds')
+                .not().isEmpty().withMessage('Seconds is required.')
+                .isNumeric().withMessage('Only numbers are allowed.')
         ],
         update:
         [
-            body('title').not().isEmpty().withMessage('Title is required.'),
-            body('track_no').not().isEmpty().withMessage('Track No. is required.'),
-            body('catalog_id').not().isEmpty().withMessage('Catalog is required.'),
-            // body('artists_id').not().isEmpty().withMessage('Artist is required.'),
-            // body('release_date').not().isEmpty().withMessage('Release Date is required.'),
-            body('duration').not().isEmpty().withMessage('Duration is required.')
+            body('title')
+                .not().isEmpty().withMessage('Title is required.'),
+            body('track_no')
+                .not().isEmpty().withMessage('Track No. is required.')
+                .isNumeric().withMessage('Only numbers are allowed.'),
+            body('catalog_id')
+                .not().isEmpty().withMessage('Catalog is required.'),
+            body('release_date')
+                .not().isEmpty().withMessage('Release Date is required.'),
+            body('minutes')
+                .not().isEmpty().withMessage('Minutes is required.')
+                .isNumeric().withMessage('Only numbers are allowed.'),
+            body('seconds')
+                .not().isEmpty().withMessage('Seconds is required.')
+                .isNumeric().withMessage('Only numbers are allowed.')
         ],
     }
 }
