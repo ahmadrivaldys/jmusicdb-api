@@ -65,7 +65,9 @@ const store = async (req, res, next) =>
 
         const { title, track_no, catalog_id, release_date, minutes, seconds } = req.body
         const id = nanoid()
-        const duration = `${minutes < 10 ? '0' + minutes.toString() : minutes.toString()}:${seconds < 10 ? '0' + seconds.toString() : seconds.toString()}`
+        const mins = minutes.toString()
+        const secs = seconds.toString()
+        const duration = `${mins.length < 2 ? '0' + mins : mins}:${secs.length < 2 ? '0' + secs : secs}`
 
         const createSong = await Song.query()
             .insert({
@@ -150,7 +152,9 @@ const update = async (req, res, next) =>
         }
 
         const { title, track_no, catalog_id, release_date, minutes, seconds } = req.body
-        const duration = `${minutes < 10 ? '0' + minutes.toString() : minutes.toString()}:${seconds < 10 ? '0' + seconds.toString() : seconds.toString()}`
+        const mins = minutes.toString()
+        const secs = seconds.toString()
+        const duration = `${mins.length < 2 ? '0' + mins : mins}:${secs.length < 2 ? '0' + secs : secs}`
 
         const updateSong = await Song.query()
             .where('id', req.params.id)

@@ -13,7 +13,7 @@ exports.seed = function(knex)
             {
                 id: '8fFivDvas9zYNulWQO608', // Nano ID (21)
                 title: 'Odoriko',
-                track_no: '01',
+                track_no: 1,
                 catalog_id: 'mzIq5afcEuITkbOngIo6-',
                 release_date: '2022-10-23',
                 duration: '3:50',
@@ -23,7 +23,7 @@ exports.seed = function(knex)
             {
                 id: 'jUcUn1tYb2xrOWgAjioqa',
                 title: 'Tabiji',
-                track_no: '02',
+                track_no: 2,
                 catalog_id: 'RXZvJIn_SJ8kMIf2eNFjS',
                 release_date: '2022-10-23',
                 duration: '4:37',
@@ -33,7 +33,7 @@ exports.seed = function(knex)
             {
                 id: 'zocyxmR0TzrWHPK35RTWu',
                 title: 'Kirari',
-                track_no: '01',
+                track_no: 2,
                 catalog_id: 'tleDyUOMOfkVZzW8WCtC0',
                 release_date: '2022-10-23',
                 duration: '3:51',

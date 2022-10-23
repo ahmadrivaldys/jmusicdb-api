@@ -125,10 +125,23 @@ const validate =
                 .not().isEmpty().withMessage('Release Date is required.'),
             body('minutes')
                 .not().isEmpty().withMessage('Minutes is required.')
-                .isNumeric().withMessage('Only numbers are allowed.'),
+                .isNumeric().withMessage('Only numbers are allowed.')
+                .custom(minutes =>
+                {
+                    if(Number(minutes) < 0) return Promise.reject('Minutes cannot be a minus.')
+                    if(Number(minutes) > 59) return Promise.reject('Maximum 59 minutes.')
+                    return true
+                }),
             body('seconds')
                 .not().isEmpty().withMessage('Seconds is required.')
                 .isNumeric().withMessage('Only numbers are allowed.')
+                .custom((seconds, { req }) =>
+                {
+                    if(Number(seconds) < 0) return Promise.reject('Seconds cannot be a minus.')
+                    if(Number(seconds) === 0 && Number(req.body.minutes) === 0) return Promise.reject('If the minute is 0, then the second must be at least 1 second.')
+                    if(Number(seconds) > 59) return Promise.reject('Maximum 59 seconds.')
+                    return true
+                })
         ],
         update:
         [
@@ -143,10 +156,23 @@ const validate =
                 .not().isEmpty().withMessage('Release Date is required.'),
             body('minutes')
                 .not().isEmpty().withMessage('Minutes is required.')
-                .isNumeric().withMessage('Only numbers are allowed.'),
+                .isNumeric().withMessage('Only numbers are allowed.')
+                .custom(minutes =>
+                {
+                    if(Number(minutes) < 0) return Promise.reject('Minutes cannot be a minus.')
+                    if(Number(minutes) > 59) return Promise.reject('Maximum 59 minutes.')
+                    return true
+                }),
             body('seconds')
                 .not().isEmpty().withMessage('Seconds is required.')
                 .isNumeric().withMessage('Only numbers are allowed.')
+                .custom((seconds, { req }) =>
+                {
+                    if(Number(seconds) < 0) return Promise.reject('Seconds cannot be a minus.')
+                    if(Number(seconds) === 0 && Number(req.body.minutes) === 0) return Promise.reject('If the minute is 0, then the second must be at least 1 second.')
+                    if(Number(seconds) > 59) return Promise.reject('Maximum 59 seconds.')
+                    return true
+                })
         ],
     }
 }
