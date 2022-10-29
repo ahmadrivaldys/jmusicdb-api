@@ -14,7 +14,8 @@ exports.seed = function(knex)
                 id: 'mzIq5afcEuITkbOngIo6-', // Nano ID (21)
                 title: 'Shiwaawase',
                 catalog_type_id: 'yHxzeeQa',
-                artists_id: 1,
+                main_artists_id: 1,
+                release_date: '2022-10-23',
                 slug: 'shiwaawase',
                 author_id
             },
@@ -22,7 +23,8 @@ exports.seed = function(knex)
                 id: 'tleDyUOMOfkVZzW8WCtC0',
                 title: 'Kirari',
                 catalog_type_id: 'lBaD9uOZ',
-                artists_id: 2,
+                main_artists_id: 2,
+                release_date: '2022-10-23',
                 slug: 'kirari',
                 author_id
             },
@@ -30,7 +32,8 @@ exports.seed = function(knex)
                 id: 'RXZvJIn_SJ8kMIf2eNFjS',
                 title: 'HELP EVER HURT NEVER',
                 catalog_type_id: 'd0oB_25O',
-                artists_id: 3,
+                main_artists_id: 3,
+                release_date: '2022-10-23',
                 slug: 'help-ever-hurt-never',
                 author_id
             }
