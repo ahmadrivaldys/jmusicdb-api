@@ -23,11 +23,14 @@ const destroy = async (req, res) =>
     // 
 }
 
+const catalogTypes = require('./catalogTypes')
+
 module.exports =
 {
     index,
     store,
     show,
     update,
-    destroy
+    destroy,
+    catalogTypes
 }
