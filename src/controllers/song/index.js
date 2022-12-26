@@ -13,9 +13,13 @@ const index = async (req, res, next) =>
 {
     try
     {
-        const currentPage = req.query.page || 1
-        const perPage = req.query.perPage || 5
+        const currentPage = parseInt(req.query.page) || 1
+        const perPage = parseInt(req.query.per_page) || 10
         
+        const totalData = await Song.query()
+            .count('id as id')
+            .then(count => count[0].id)
+
         const getAllSongs = await Song.query()
             .select('id', 'title', 'track_no', 'release_date', 'duration', 'slug', 'created_at', 'updated_at')
             .withGraphFetched('[catalog(selectCatalog).type(selectCatalogType), author(selectAuthor)]')
@@ -24,6 +28,8 @@ const index = async (req, res, next) =>
                 selectCatalogType: builder => builder.select('name'),
                 selectAuthor: builder => builder.select('fullname')
             })
+            .offset((currentPage - 1) * perPage)
+            .limit(perPage)
 
         if(!getAllSongs)
         {
@@ -38,9 +44,9 @@ const index = async (req, res, next) =>
                 statusText: 'OK',
                 message: 'Successfully fetched all song data.',
                 songs: getAllSongs,
-                totalData: getAllSongs.length,
-                perPage: parseInt(perPage),
-                currentPage: parseInt(currentPage)
+                totalData,
+                perPage,
+                currentPage
             })
     }
     catch(error)
@@ -63,7 +69,7 @@ const store = async (req, res, next) =>
             throw error
         }
 
-        const { title, track_no, catalog_id, release_date, minutes, seconds } = req.body
+        const { title, track_no, catalog_id, main_artists_id, featuring_artists_id, release_date, minutes, seconds } = req.body
         const id = nanoid()
         const mins = minutes.toString()
         const secs = seconds.toString()
@@ -75,6 +81,8 @@ const store = async (req, res, next) =>
                 title,
                 track_no,
                 catalog_id,
+                main_artists_id,
+                featuring_artists_id,
                 release_date,
                 duration,
                 slug: slugify(title, { lower: true }),
@@ -151,7 +159,7 @@ const update = async (req, res, next) =>
             throw error
         }
 
-        const { title, track_no, catalog_id, release_date, minutes, seconds } = req.body
+        const { title, track_no, catalog_id, main_artists_id, featuring_artists_id, release_date, minutes, seconds } = req.body
         const mins = minutes.toString()
         const secs = seconds.toString()
         const duration = `${mins.length < 2 ? '0' + mins : mins}:${secs.length < 2 ? '0' + secs : secs}`
@@ -162,6 +170,8 @@ const update = async (req, res, next) =>
                 title,
                 track_no,
                 catalog_id,
+                main_artists_id,
+                featuring_artists_id,
                 release_date,
                 duration,
                 slug: slugify(title, { lower: true }),

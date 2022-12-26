@@ -7,12 +7,12 @@ const routes = require('./src/routes')
 const errorHandler = require('./src/middlewares/error-handler')
 
 const fileStorage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, 'public/images'),
+    destination: (req, file, cb) => cb(null, 'uploads/images'),
     filename: (req, file, cb) => cb(null, `${new Date().getTime()}-${file.originalname}`)
 })
 
 app.use(bodyParser.json())
-app.use('/images', express.static(path.join(__dirname, 'public/images')))
+app.use('/images', express.static(path.join(__dirname, 'uploads/images')))
 app.use(multer({ storage: fileStorage }).single('image'))
 
 app.use((req, res, next) =>

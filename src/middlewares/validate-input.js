@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs')
-const { body } = require('express-validator')
+const { body, check } = require('express-validator')
 const { getAccount } = require('../utils')
 
 const validate =
@@ -45,6 +45,14 @@ const validate =
                 }),
             body('account_type_id')
                 .not().isEmpty().withMessage('Account Type is required.')
+        ]
+    },
+    artist:
+    {
+        store:
+        [
+            body('artist_name')
+                .not().isEmpty().withMessage('Name is required.')
         ]
     },
     auth:

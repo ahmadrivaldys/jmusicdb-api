@@ -1,5 +1,6 @@
 const router  = require('express').Router()
 const account = require('./account')
+const artist  = require('./artist')
 // const album   = require('./album')
 const auth    = require('./auth')
 const catalog = require('./catalog')
@@ -13,6 +14,7 @@ router.get('/', (req, res) =>
 })
 
 router.use(account)
+router.use(artist)
 // router.use(album)
 router.use(auth)
 router.use(catalog)
