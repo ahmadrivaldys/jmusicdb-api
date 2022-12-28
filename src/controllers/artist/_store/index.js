@@ -4,7 +4,7 @@ const { nanoid } = require('nanoid')
 const slugify = require('slugify')
 
 // Importing models
-const Artist = require('../../../models/artist')
+const Artist = require('../../../models/Artist')
 
 const store = async (req, res, next) =>
 {

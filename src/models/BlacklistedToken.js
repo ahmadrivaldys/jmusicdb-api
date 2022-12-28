@@ -1,5 +1,5 @@
 const tables = require('../../config/tables')
-const Model = require('./init-model')
+const Model = require('../../config/model')
 
 class BlacklistedToken extends Model
 {

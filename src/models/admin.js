@@ -1,6 +1,6 @@
 const tables = require('../../config/tables')
-const Model = require('./init-model')
-const AccountType = require('./account_type')
+const Model = require('../../config/model')
+const AccountType = require('./AccountType')
 
 class Admin extends Model
 {

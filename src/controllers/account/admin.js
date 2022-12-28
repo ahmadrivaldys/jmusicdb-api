@@ -4,8 +4,8 @@ const { v4: uuidv4 } = require('uuid')
 const { validationResult } = require('express-validator')
 
 // Importing models
-const AccountType = require('../../models/account_type')
-const Admin = require('../../models/admin')
+const AccountType = require('../../models/AccountType')
+const Admin = require('../../models/Admin')
 
 const index = async (req, res) =>
 {

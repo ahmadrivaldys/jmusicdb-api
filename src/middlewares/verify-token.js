@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const BlacklistedToken = require('../models/blacklisted_token')
+const BlacklistedToken = require('../models/BlacklistedToken')
 
 /**
  * Verify Token

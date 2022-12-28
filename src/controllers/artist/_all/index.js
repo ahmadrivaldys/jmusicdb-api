@@ -1,5 +1,5 @@
 // Importing models
-const Artist = require('../../../models/artist')
+const Artist = require('../../../models/Artist')
 
 const all = async (req, res, next) =>
 {

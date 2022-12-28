@@ -6,9 +6,9 @@ const { v4: uuidv4 } = require('uuid')
 const { validationResult } = require('express-validator')
 
 // Importing models
-const AccountType = require('../../models/account_type')
-const BlacklistedToken = require('../../models/blacklisted_token')
-const User = require('../../models/user')
+const AccountType = require('../../models/AccountType')
+const BlacklistedToken = require('../../models/BlacklistedToken')
+const User = require('../../models/User')
 
 // Importing utils/helpers
 const { getAccount } = require('../../utils')

@@ -1,5 +1,5 @@
-const Admin = require('../models/admin')
-const User = require('../models/user')
+const Admin = require('../models/Admin')
+const User = require('../models/User')
 
 const getAccount = async (account_type, conditions) =>
 {

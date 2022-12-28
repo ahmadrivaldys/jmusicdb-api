@@ -1,7 +1,7 @@
 const tables = require('../../config/tables')
-const Model = require('./init-model')
-const Song = require('./song')
-const CatalogType = require('./catalog_type')
+const Model = require('../../config/model')
+const Song = require('./Song')
+const CatalogType = require('./CatalogType')
 
 class Catalog extends Model
 {

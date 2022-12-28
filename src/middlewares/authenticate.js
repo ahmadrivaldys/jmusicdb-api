@@ -1,6 +1,6 @@
 const verifyToken = require('./verify-token')
-const AccountType = require('../models/account_type')
-const Admin = require('../models/admin')
+const AccountType = require('../models/AccountType')
+const Admin = require('../models/Admin')
 
 const index = async (req, res, next) =>
 {

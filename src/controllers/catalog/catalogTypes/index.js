@@ -1,4 +1,4 @@
-const CatalogType = require('../../../models/catalog_type')
+const CatalogType = require('../../../models/CatalogType')
 
 const catalogTypes = async (req, res, next) =>
 {

@@ -4,7 +4,7 @@ const { nanoid } = require('nanoid')
 const slugify = require('slugify')
 
 // Importing models
-const Song = require('../../models/song')
+const Song = require('../../models/Song')
 
 // Importing utils/helpers
 const { getDBCurrentTime } = require('../../utils')
