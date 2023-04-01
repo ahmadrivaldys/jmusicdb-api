@@ -53,6 +53,11 @@ const validate =
         [
             body('artist_name')
                 .not().isEmpty().withMessage('Name is required.')
+        ],
+        update:
+        [
+            body('artist_name')
+                .not().isEmpty().withMessage('Name is required.')
         ]
     },
     auth:

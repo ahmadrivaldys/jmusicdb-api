@@ -13,13 +13,14 @@ const all = async (req, res, next) =>
             .then(count => count[0].id)
         
         const getAllArtists = await Artist.query()
-            .select('id', 'name', 'slug', 'photo', 'description', 'created_at', 'updated_at')
+            .select('id', 'name', 'slug', 'photo', 'created_at', 'updated_at')
             .withGraphFetched('[author(selectAuthor)]')
             .modifiers({
                 selectAuthor: builder => builder.select('fullname')
             })
             .offset((currentPage - 1) * perPage)
             .limit(perPage)
+            .orderBy('name')
 
         if(!getAllArtists)
         {

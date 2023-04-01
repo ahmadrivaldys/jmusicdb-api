@@ -1,8 +1,12 @@
 # dependencies
-node_modules
+/node_modules
 
 # env files
 .env
 
-# etc
+# misc
 .DS_Store
+
+# uploads
+/uploads/files
+/uploads/images
