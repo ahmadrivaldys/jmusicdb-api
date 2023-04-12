@@ -57,7 +57,11 @@ const validate =
         update:
         [
             body('artist_name')
-                .not().isEmpty().withMessage('Name is required.')
+                .not().isEmpty().withMessage('Name is required.'),
+            body('current_photo_url')
+                .not().isEmpty().withMessage('Active photo must be included to update photo.'),
+            body('id')
+                .not().isEmpty().withMessage('Id is required.')
         ]
     },
     auth:

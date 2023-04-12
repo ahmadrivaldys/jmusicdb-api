@@ -8,6 +8,8 @@ const tables =
     blacklisted_tokens: 'tbl_blacklisted_tokens',
     catalog_types: 'tbl_catalog_types',
     catalogs: 'tbl_catalogs',
+    catalogs_main_artists: 'tbl_catalogs_main_artists',
+    catalogs_featuring_artists: 'tbl_catalogs_featuring_artists',
     songs: 'tbl_songs',
     statuses: 'tbl_statuses',
     tags: 'tbl_tags',
