@@ -4,8 +4,8 @@ const { v4: uuidv4 } = require('uuid')
 const { validationResult } = require('express-validator')
 
 // Importing models
-const AccountType = require('../../models/AccountType')
-const User = require('../../models/User')
+const AccountType = require('../../../models/AccountType')
+const User = require('../../../models/User')
 
 const register = async (req, res, next) =>
 {

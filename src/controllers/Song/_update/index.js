@@ -6,7 +6,7 @@ const slugify = require('slugify')
 const Song = require('../../../models/Song')
 
 // Importing utils/helpers
-const { getDBCurrentTime } = require('../../utils')
+const { getDBCurrentTime } = require('../../../utils')
 
 const update = async (req, res, next) =>
 {

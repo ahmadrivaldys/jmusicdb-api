@@ -2,7 +2,7 @@
 const { nanoid } = require('nanoid')
 
 // Importing models
-const BlacklistedToken = require('../../models/BlacklistedToken')
+const BlacklistedToken = require('../../../models/BlacklistedToken')
 
 const logout = async (req, res, next) =>
 {

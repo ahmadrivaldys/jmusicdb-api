@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const { validationResult } = require('express-validator')
 
 // Importing utils/helpers
-const { getAccount } = require('../../utils')
+const { getAccount } = require('../../../utils')
 
 const login = async (req, res, next) =>
 {
