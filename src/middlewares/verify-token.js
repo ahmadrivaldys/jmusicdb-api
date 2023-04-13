@@ -25,6 +25,8 @@ const verifyToken = async (headers, verifyTokenFor) =>
 
     const authSplit = authorization.split(' ')
     const [ authType, authToken ] = [ authSplit[0], authSplit[1] ]
+    let refreshToken = '' // When the user logs out, the refreshToken will be blacklisted with the authToken
+    if(verifyTokenFor === 'logout') refreshToken = authSplit[2]
 
     // Invalid Auth Type
     if(authType !== 'Bearer')
@@ -36,6 +38,7 @@ const verifyToken = async (headers, verifyTokenFor) =>
 
     const checkToken = await BlacklistedToken.query()
         .where('token', authToken)
+        .orWhere('refresh_token', authToken)
         .first()
 
     // Blacklisted Token
@@ -50,7 +53,9 @@ const verifyToken = async (headers, verifyTokenFor) =>
     }
 
     // JWT Verify
-    const getDecodedToken = jwt.verify(authToken, process.env.JWT_SECRET_KEY, (err, decoded) =>
+    const secretKey = verifyTokenFor === 'refresh' ? process.env.JWT_SECRET_KEY_REFRESH : process.env.JWT_SECRET_KEY
+    
+    const getDecodedToken = jwt.verify(authToken, secretKey, (err, decoded) =>
     {
         if(err)
         {
@@ -73,7 +78,7 @@ const verifyToken = async (headers, verifyTokenFor) =>
         return decoded
     })
 
-    if(verifyTokenFor === 'logout') return authToken
+    if(verifyTokenFor === 'logout') return { token: authToken, refresh_token: refreshToken }
 
     return getDecodedToken
 }

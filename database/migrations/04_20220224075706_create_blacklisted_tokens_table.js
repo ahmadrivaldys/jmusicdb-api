@@ -6,6 +6,7 @@ exports.up = function(knex)
     {
         table.specificType('id', 'CHAR(8)').primary()
         table.string('token').notNullable()
+        table.string('refresh_token').notNullable()
         table.timestamps(true, true)
     })
 }

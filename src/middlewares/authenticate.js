@@ -6,7 +6,7 @@ const index = async (req, res, next) =>
 {
     try
     {
-        const decoded = await verifyToken(req.headers)
+        const decoded = await verifyToken(req.headers, 'refresh')
 
         req.uuid = decoded.uuid
         req.username = decoded.username
@@ -68,7 +68,10 @@ const verifyBeforeLogout = async (req, res, next) =>
 {
     try
     {
-        req.verified_token = await verifyToken(req.headers, 'logout')
+        const decoded = await verifyToken(req.headers, 'logout')
+        
+        req.verified_token = decoded.token
+        req.verified_refresh_token = decoded.refresh_token
 
         next()
     }

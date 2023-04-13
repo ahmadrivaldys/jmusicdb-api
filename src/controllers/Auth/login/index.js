@@ -19,14 +19,24 @@ const login = async (req, res, next) =>
         }
 
         const account = await getAccount(req.query.account_type, { username: req.body.username })
+        
+        const payload = {
+            uuid: account.uuid,
+            username: account.username
+        }
 
-        const generateToken = jwt.sign({
-                uuid: account.uuid,
-                username: account.username
-            },
+        const generateToken = jwt.sign(
+            payload,
             process.env.JWT_SECRET_KEY,
             {
-                expiresIn: '7d'
+                expiresIn: '10m'
+            })
+
+        const generateRefreshToken = jwt.sign(
+            payload,
+            process.env.JWT_SECRET_KEY_REFRESH,
+            {
+                expiresIn: '20m'
             })
 
         return res.status(200)
@@ -35,6 +45,7 @@ const login = async (req, res, next) =>
                 statusText: 'OK',
                 message: 'Log in successful.',
                 token: generateToken,
+                refreshToken: generateRefreshToken,
                 loggedInUser:
                 {
                     fullname: account.fullname,

@@ -13,24 +13,21 @@ exports.seed = function(knex)
             {
                 id: 'F-ndBwTGFk7zgwB_FM7ha', // Nano ID (21)
                 name: 'ONE OK ROCK',
-                description: '',
-                photo: '',
+                description: 'Description for ONE OK ROCK.',
                 slug: 'one-ok-rock',
                 author_id
             },
             {
                 id: 'uWboZ-7ZMsNkWdu1HZe3O',
                 name: 'Vaundy',
-                description: '',
-                photo: '',
+                description: 'Description for Vaundy.',
                 slug: 'vaundy',
                 author_id
             },
             {
                 id: 'mVipICnMLk3poUSKXX312',
                 name: 'Fujii Kaze',
-                description: '',
-                photo: '',
+                description: 'Description for Fujii Kaze.',
                 slug: 'fujii-kaze',
                 author_id
             }

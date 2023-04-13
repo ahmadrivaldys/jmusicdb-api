@@ -9,7 +9,7 @@ const logout = async (req, res, next) =>
     try
     {
         const blacklistToken = await BlacklistedToken.query()
-            .insert({ id: nanoid(8), token: req.verified_token })
+            .insert({ id: nanoid(8), token: req.verified_token, refresh_token: req.verified_refresh_token })
 
         if(!blacklistToken)
         {
