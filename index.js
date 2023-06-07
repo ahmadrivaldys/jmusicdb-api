@@ -1,11 +1,14 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
 const path = require('path')
 const routes = require('./src/routes')
 const errorHandler = require('./src/middlewares/error-handler')
 
 app.use(bodyParser.json())
+app.use(cookieParser())
+
 app.use('/images', express.static(path.join(__dirname, 'uploads/images')))
 
 app.use((req, res, next) =>

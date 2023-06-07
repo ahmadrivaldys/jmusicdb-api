@@ -1,8 +1,12 @@
-const getAccount = require('./get-account')
-const getDBCurrentTime = require('./get-db-current-time')
+const getAccount = require('./getAccount')
+const getDBCurrentTime = require('./getDBCurrentTime')
+const parseCookies = require('./parseCookies')
+const throwError = require('./throwError')
 
 module.exports =
 {
     getAccount,
-    getDBCurrentTime
+    getDBCurrentTime,
+    parseCookies,
+    throwError
 }

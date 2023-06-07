@@ -14,23 +14,30 @@ const refreshToken = async (req, res, next) =>
             payload,
             process.env.JWT_SECRET_KEY,
             {
-                expiresIn: '10m'
+                expiresIn: '5d'
             })
 
         const generateRefreshToken = jwt.sign(
             payload,
-            process.env.JWT_SECRET_KEY_REFRESH,
+            process.env.JWT_REFRESH_SECRET_KEY,
             {
-                expiresIn: '20m'
+                expiresIn: '7d'
             })
+        
+        // Expires in 5 days
+        const tokenExpiration = Date.now() + (5 * 24) * 3600000
 
         return res.status(200)
+            .cookie('access_token', `Bearer ${generateToken}`, {
+                maxAge: tokenExpiration,
+                httpOnly: true
+            })
             .json({
                 statusCode: 200,
                 statusText: 'OK',
                 message: 'Successfully refreshed the token.',
-                token: generateToken,
-                refreshToken: generateRefreshToken
+                refreshToken: generateRefreshToken,
+                accessTokenExpiration: tokenExpiration
             })
     }
     catch(error)

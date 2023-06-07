@@ -1,6 +1,7 @@
 const verifyToken = require('./verify-token')
 const AccountType = require('../models/AccountType')
 const Admin = require('../models/Admin')
+const { throwError } = require('../utils')
 
 const index = async (req, res, next) =>
 {
@@ -40,12 +41,7 @@ const admin = async (req, res, next) =>
             })
             .first()
 
-        if(!checkAccount)
-        {
-            const error = new Error('Only admin is allowed.')
-            error.statusCode = 403
-            throw error
-        }
+        if(!checkAccount) throwError('Only admin is allowed.', 403)
 
         req.uuid = decoded.uuid
         req.username = decoded.username

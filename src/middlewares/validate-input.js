@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs')
-const { body, check } = require('express-validator')
+const { body } = require('express-validator')
 const { getAccount } = require('../utils')
 
 const validate =

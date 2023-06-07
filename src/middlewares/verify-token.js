@@ -1,86 +1,120 @@
 const jwt = require('jsonwebtoken')
 const BlacklistedToken = require('../models/BlacklistedToken')
+const { parseCookies, throwError } = require('../utils')
 
 /**
  * Verify Token
  * 
  * @param {*} headers 
  * @param {string} verifyTokenFor 
- * @returns decoded or verified token
+ * @returns decoded or verified tokens
  */
 const verifyToken = async (headers, verifyTokenFor) =>
 {
-    const { authorization } = headers
+    const { authorization, cookie } = headers // Local storage based token: authorization - for refresh token
+    const { access_token } = parseCookies(cookie) // Cookie based token: access token
 
-    // No Auth
-    if(!authorization)
-    {
-        let resMessage = 'Authentication is needed. Please log in.'
-        if(verifyTokenFor === 'logout') resMessage = 'Can\'t log out. You haven\'t logged in for this session yet.'
-
-        const error = new Error(resMessage)
-        error.statusCode = 401
-        throw error
+    const errorMessage = {
+        no_auth: 'Authentication is needed. Please log in.',
+        invalid_auth_type: 'Invalid authorization type. Only Bearer authentication is allowed.',
+        blacklisted_token: 'Invalid token. Please log in again.',
+        token_expired: 'Invalid token: token has expired. Please log in again.',
+        logout_no_auth: 'Can\'t log out. You haven\'t logged in for this session yet.',
+        logout_blacklisted_token: 'You\'ve logged out before. No need to log out again.',
+        logout_token_expired: 'Can\'t log out. Invalid token: token has expired.'
     }
 
-    const authSplit = authorization.split(' ')
-    const [ authType, authToken ] = [ authSplit[0], authSplit[1] ]
-    let refreshToken = '' // When the user logs out, the refreshToken will be blacklisted with the authToken
-    if(verifyTokenFor === 'logout') refreshToken = authSplit[2]
+    let verifiedTokens = null
 
-    // Invalid Auth Type
-    if(authType !== 'Bearer')
+    if(verifyTokenFor === 'logout')
     {
-        const error = new Error('Invalid authorization type. Only Bearer authentication is allowed.')
-        error.statusCode = 401
-        throw error
-    }
+        // No Auth
+        if(!access_token || !authorization) throwError(errorMessage.logout_no_auth, 401)
 
-    const checkToken = await BlacklistedToken.query()
-        .where('token', authToken)
-        .orWhere('refresh_token', authToken)
-        .first()
+        const tokens = [access_token, authorization]
+        const authTokens = {}
 
-    // Blacklisted Token
-    if(checkToken)
-    {
-        let resMessage = 'Invalid token. Please log in again.'
-        if(verifyTokenFor === 'logout') resMessage = 'You\'ve logged out before. No need to log out again.'
-
-        const error = new Error(resMessage)
-        error.statusCode = 401
-        throw error
-    }
-
-    // JWT Verify
-    const secretKey = verifyTokenFor === 'refresh' ? process.env.JWT_SECRET_KEY_REFRESH : process.env.JWT_SECRET_KEY
-    
-    const getDecodedToken = jwt.verify(authToken, secretKey, (err, decoded) =>
-    {
-        if(err)
+        tokens.forEach(async token =>
         {
-            if(err.name === 'TokenExpiredError')
-            {
-                let resMessage = 'Invalid token: token has expired. Please log in again.'
-                if(verifyTokenFor === 'logout') resMessage = 'Can\'t log out. Invalid token: token has expired.'
+            const tokenSplit = token.split(' ')
+            const [ tokenType, tokenValue ] = [ tokenSplit[0], tokenSplit[1] ]
 
-                const error = new Error(resMessage)
-                error.statusCode = 401
-                throw error
-            }
-            
-            console.error('JWT Error:', err.message)
-            const error = new Error(err.message)
-            error.statusCode = 401
-            throw error
+            // Invalid Auth Type
+            if(tokenType !== 'Bearer') throwError(errorMessage.invalid_auth_type, 401)
+
+            const checkToken = await BlacklistedToken.query()
+                .where('token', tokenValue)
+                .orWhere('refresh_token', tokenValue)
+                .first()
+
+            // Blacklisted Token
+            if(checkToken) throwError(errorMessage.logout_blacklisted_token, 401)
+
+            const secretKey = token === authorization ? process.env.JWT_REFRESH_SECRET_KEY : process.env.JWT_SECRET_KEY
+
+            // JWT Verify
+            jwt.verify(tokenValue, secretKey, (err, decoded) =>
+            {
+                if(err)
+                {
+                    if(err.name === 'TokenExpiredError') throwError(errorMessage.logout_token_expired, 401)
+                    
+                    console.error('JWT Error:', err.message)
+                    throwError(err.message, 401)
+                }
+            })
+
+            authTokens[token === access_token ? 'token' : 'refresh_token'] = tokenValue
+        })
+
+        verifiedTokens = authTokens
+    }
+    else
+    {
+        let authToken = access_token
+        let secretKey = process.env.JWT_SECRET_KEY
+
+        if(verifyTokenFor === 'refresh')
+        {
+            authToken = authorization
+            secretKey = process.env.JWT_REFRESH_SECRET_KEY
         }
 
-        return decoded
-    })
+        // No Auth
+        if(!authToken) throwError(errorMessage.no_auth, 401)
 
-    if(verifyTokenFor === 'logout') return { token: authToken, refresh_token: refreshToken }
+        const tokenSplit = authToken.split(' ')
+        const [ tokenType, tokenValue ] = [ tokenSplit[0], tokenSplit[1] ]
 
-    return getDecodedToken
+        // Invalid Auth Type
+        if(tokenType !== 'Bearer') throwError(errorMessage.invalid_auth_type, 401)
+
+        const checkToken = await BlacklistedToken.query()
+            .where('token', tokenValue)
+            .orWhere('refresh_token', tokenValue)
+            .first()
+
+        // Blacklisted Token
+        if(checkToken) throwError(errorMessage.blacklisted_token, 401)
+
+        // JWT Verify
+        const decodedToken = jwt.verify(tokenValue, secretKey, (err, decoded) =>
+        {
+            if(err)
+            {
+                if(err.name === 'TokenExpiredError') throwError(errorMessage.token_expired, 401)
+                
+                console.error('JWT Error:', err.message)
+                throwError(err.message, 401)
+            }
+
+            return decoded
+        })
+
+        verifiedTokens = decodedToken
+    }
+
+    return verifiedTokens
 }
 
 module.exports = verifyToken
