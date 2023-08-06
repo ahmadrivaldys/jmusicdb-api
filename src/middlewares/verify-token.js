@@ -11,8 +11,11 @@ const { parseCookies, throwError } = require('../utils')
  */
 const verifyToken = async (headers, verifyTokenFor) =>
 {
-    const { authorization, cookie } = headers // Local storage based token: authorization - for refresh token
+    const { authorization: refresh_token, cookie } = headers // Local storage based token: authorization - for refresh token
     const { access_token } = parseCookies(cookie) // Cookie based token: access token
+
+    let secretKey = process.env.JWT_SECRET_KEY // Get the default secret key. The default secret key only used for access_token
+    let result = null
 
     const errorMessage = {
         no_auth: 'Authentication is needed. Please log in.',
@@ -24,17 +27,16 @@ const verifyToken = async (headers, verifyTokenFor) =>
         logout_token_expired: 'Can\'t log out. Invalid token: token has expired.'
     }
 
-    let verifiedTokens = null
-
     if(verifyTokenFor === 'logout')
     {
         // No Auth
-        if(!access_token || !authorization) throwError(errorMessage.logout_no_auth, 401)
+        if(!access_token || !refresh_token) throwError(errorMessage.logout_no_auth, 401)
 
-        const tokens = [access_token, authorization]
-        const authTokens = {}
+        const tokens = [access_token, refresh_token]
+        const verifiedTokens = []
+        let isBlacklistedTokenExist = false
 
-        tokens.forEach(async token =>
+        tokens.forEach((token, index) =>
         {
             const tokenSplit = token.split(' ')
             const [ tokenType, tokenValue ] = [ tokenSplit[0], tokenSplit[1] ]
@@ -42,18 +44,26 @@ const verifyToken = async (headers, verifyTokenFor) =>
             // Invalid Auth Type
             if(tokenType !== 'Bearer') throwError(errorMessage.invalid_auth_type, 401)
 
-            const checkToken = await BlacklistedToken.query()
+            // Blacklisted Token
+            BlacklistedToken.query()
                 .where('token', tokenValue)
                 .orWhere('refresh_token', tokenValue)
                 .first()
+                .then(blacklistedToken =>
+                {
+                    console.log(blacklistedToken.id)
+                    if(blacklistedToken && blacklistedToken.id !== '')
+                    {
+                        isBlacklistedTokenExist = true
+                        
+                    }
+                })
 
-            // Blacklisted Token
-            if(checkToken) throwError(errorMessage.logout_blacklisted_token, 401)
-
-            const secretKey = token === authorization ? process.env.JWT_REFRESH_SECRET_KEY : process.env.JWT_SECRET_KEY
+            // If current token is refresh token, then use the refresh token secret key
+            if(token === refresh_token) secretKey = process.env.JWT_REFRESH_SECRET_KEY
 
             // JWT Verify
-            jwt.verify(tokenValue, secretKey, (err, decoded) =>
+            jwt.verify(tokenValue, secretKey, (err) =>
             {
                 if(err)
                 {
@@ -64,19 +74,22 @@ const verifyToken = async (headers, verifyTokenFor) =>
                 }
             })
 
-            authTokens[token === access_token ? 'token' : 'refresh_token'] = tokenValue
+            if(token === access_token) verifiedTokens.push({ token: tokenValue })
+            if(token === refresh_token) verifiedTokens.push({ refresh_token: tokenValue })
         })
 
-        verifiedTokens = authTokens
+        console.log('isBlacklistedTokenExist:', isBlacklistedTokenExist)
+        if(isBlacklistedTokenExist) throwError(errorMessage.logout_blacklisted_token, 401)
+
+        result = verifiedTokens
     }
     else
     {
         let authToken = access_token
-        let secretKey = process.env.JWT_SECRET_KEY
 
         if(verifyTokenFor === 'refresh')
         {
-            authToken = authorization
+            authToken = refresh_token
             secretKey = process.env.JWT_REFRESH_SECRET_KEY
         }
 
@@ -89,13 +102,13 @@ const verifyToken = async (headers, verifyTokenFor) =>
         // Invalid Auth Type
         if(tokenType !== 'Bearer') throwError(errorMessage.invalid_auth_type, 401)
 
-        const checkToken = await BlacklistedToken.query()
+        const blacklistedToken = await BlacklistedToken.query()
             .where('token', tokenValue)
             .orWhere('refresh_token', tokenValue)
             .first()
 
         // Blacklisted Token
-        if(checkToken) throwError(errorMessage.blacklisted_token, 401)
+        if(blacklistedToken) throwError(errorMessage.blacklisted_token, 401)
 
         // JWT Verify
         const decodedToken = jwt.verify(tokenValue, secretKey, (err, decoded) =>
@@ -111,10 +124,10 @@ const verifyToken = async (headers, verifyTokenFor) =>
             return decoded
         })
 
-        verifiedTokens = decodedToken
+        result = decodedToken
     }
 
-    return verifiedTokens
+    return result
 }
 
 module.exports = verifyToken

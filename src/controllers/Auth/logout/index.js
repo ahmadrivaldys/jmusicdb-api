@@ -18,11 +18,13 @@ const logout = async (req, res, next) =>
         }
 
         return res.status(200)
+            .clearCookie('access_token')
             .json({
                 statusCode: 200,
                 statusText: 'OK',
                 message: 'Log out successful.'
             })
+            .end()
     }
     catch(error)
     {

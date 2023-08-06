@@ -25,7 +25,7 @@ const refreshToken = async (req, res, next) =>
             })
         
         // Expires in 5 days
-        const tokenExpiration = Date.now() + (5 * 24) * 3600000
+        const tokenExpiration = 5 * 24 * (60 * 60 * 1000)
 
         return res.status(200)
             .cookie('access_token', `Bearer ${generateToken}`, {
@@ -37,7 +37,7 @@ const refreshToken = async (req, res, next) =>
                 statusText: 'OK',
                 message: 'Successfully refreshed the token.',
                 refreshToken: generateRefreshToken,
-                accessTokenExpiration: tokenExpiration
+                accessTokenExpiration: Date.now() + tokenExpiration
             })
     }
     catch(error)

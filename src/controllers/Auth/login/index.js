@@ -40,7 +40,7 @@ const login = async (req, res, next) =>
             })
 
         // Expires in 5 days
-        const tokenExpiration = Date.now() + (5 * 24) * 3600000
+        const tokenExpiration = 5 * 24 * (60 * 60 * 1000)
 
         return res.status(200)
             .cookie('access_token', `Bearer ${generateToken}`, {
@@ -52,7 +52,7 @@ const login = async (req, res, next) =>
                 statusText: 'OK',
                 message: 'Log in successful.',
                 refreshToken: generateRefreshToken,
-                accessTokenExpiration: tokenExpiration,
+                accessTokenExpiration: Date.now() + tokenExpiration,
                 loggedInUser:
                 {
                     fullname: account.fullname,

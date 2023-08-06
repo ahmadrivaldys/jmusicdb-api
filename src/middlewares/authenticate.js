@@ -3,7 +3,7 @@ const AccountType = require('../models/AccountType')
 const Admin = require('../models/Admin')
 const { throwError } = require('../utils')
 
-const index = async (req, res, next) =>
+const refresh = async (req, res, next) =>
 {
     try
     {
@@ -66,8 +66,8 @@ const verifyBeforeLogout = async (req, res, next) =>
     {
         const decoded = await verifyToken(req.headers, 'logout')
         
-        req.verified_token = decoded.token
-        req.verified_refresh_token = decoded.refresh_token
+        req.verified_token = decoded[0].token
+        req.verified_refresh_token = decoded[1].refresh_token
 
         next()
     }
@@ -78,4 +78,4 @@ const verifyBeforeLogout = async (req, res, next) =>
     }
 }
 
-module.exports = { index, admin, verifyBeforeLogout }
+module.exports = { refresh, admin, verifyBeforeLogout }
