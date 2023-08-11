@@ -25,7 +25,7 @@ const admin = async (req, res, next) =>
 {
     try
     {
-        const decoded = await verifyToken(req.headers)
+        const decoded = await verifyToken(req.headers, 'read')
 
         const accountType = await AccountType.query()
             .where({ category: 'admin', category_order: 1 })
@@ -64,16 +64,16 @@ const verifyBeforeLogout = async (req, res, next) =>
 {
     try
     {
-        const decoded = await verifyToken(req.headers, 'logout')
+        const tokens = await verifyToken(req.headers, 'remove')
         
-        req.verified_token = decoded[0].token
-        req.verified_refresh_token = decoded[1].refresh_token
+        req.verified_token = tokens.accessToken
+        req.verified_refresh_token = tokens.refreshToken
 
         next()
     }
     catch(error)
     {
-        console.log('Error:', error.message)
+        console.log(error)
         next(error)
     }
 }
